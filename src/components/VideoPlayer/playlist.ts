@@ -156,17 +156,12 @@ const playlist: PlaylistItem[] = [
 			},
 			{
 				id: 6,
-				file: '/Cosmos.Laundromat.(2015)/thumbs_256x144.vtt',
+				file: '/Cosmos.Laundromat.(2015)/thumbs_160x68.vtt',
 				kind: 'thumbnails',
 			},
 			{
 				id: 7,
-				file: '/Cosmos.Laundromat.(2015)/chapters.vtt',
-				kind: 'chapters',
-			},
-			{
-				id: 8,
-				file: '/Cosmos.Laundromat.(2015)/thumbs_256x144.webp',
+				file: '/Cosmos.Laundromat.(2015)/thumbs_160x68.webp',
 				kind: 'sprite',
 			},
 		],
