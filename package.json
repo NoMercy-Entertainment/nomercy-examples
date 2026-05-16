@@ -5,47 +5,50 @@
   "type": "module",
   "packageManager": "yarn@4.13.0",
   "scripts": {
-    "dev": "vite --host  --force",
-    "build": "vite build",
-		"lint": "eslint --fix .",
-    "preview": "vite preview",
-    "postbuild": "node remove-moz.cjs"
+  "dev": "vite --host  --force",
+  "build": "vite build",
+  "lint": "eslint --fix .",
+  "preview": "vite preview",
+  "postbuild": "node remove-moz.cjs"
   },
   "dependencies": {
-    "@nomercy-entertainment/nomercy-music-player": "^0.1.6",
-    "@nomercy-entertainment/nomercy-video-player": "^1.2.2",
-    "@vueuse/core": "^12.4.0",
-    "tailwind-children": "^0.5.0",
-    "tailwind-merge": "^2.6.0",
-    "vue": "^3.5.13",
-    "vue-meta": "^2.4.0",
-    "vue-router": "^4.2.0"
+  "@nomercy-entertainment/nomercy-music-player": "^0.1.6",
+  "@nomercy-entertainment/nomercy-video-player": "^1.2.2",
+  "@vueuse/core": "^12.4.0",
+  "tailwind-children": "^0.5.0",
+  "tailwind-merge": "^2.6.0",
+  "vue": "^3.5.13",
+  "vue-meta": "^2.4.0",
+  "vue-router": "^4.2.0"
   },
   "devDependencies": {
-    "@tailwindcss/line-clamp": "^0.4.4",
-    "@types/node": "^22.10.5",
-    "@types/webvtt-parser": "^2.2.0",
-    "@vitejs/plugin-vue": "^5.2.1",
-    "autoprefixer": "^10.4.14",
-    "eslint-plugin-tailwindcss": "^3.8.3",
-    "postcss": "^8.4.27",
-    "postcss-loader": "^7.3.3",
-    "postcss-nested": "^7.0.2",
-		"eslint": "^9.0.0",
-		"eslint-plugin-format": "1.0.1",
-    "postcss-preset-env": "^9.2.0",
-		"prettier-eslint": "^16.4.2",
-    "prettier": "^3.3.3",
-    "sass": "^1.65.1",
-    "sass-loader": "^13.3.2",
-    "tailwind-scrollbar": "^3.1.0",
-    "tailwindcss": "^3.2.7",
-    "vite": "^6.0.5",
-    "vite-plugin-vue-devtools": "^7.6.8"
+  "@tailwindcss/line-clamp": "^0.4.4",
+  "@types/node": "^22.10.5",
+  "@types/webvtt-parser": "^2.2.0",
+  "@vitejs/plugin-vue": "^5.2.1",
+  "autoprefixer": "^10.4.14",
+  "eslint-plugin-tailwindcss": "^3.8.3",
+  "postcss": "^8.4.27",
+  "postcss-loader": "^7.3.3",
+  "postcss-nested": "^7.0.2",
+  "eslint": "^9.0.0",
+  "eslint-plugin-format": "1.0.1",
+  "postcss-preset-env": "^9.2.0",
+  "prettier-eslint": "^16.4.2",
+  "prettier": "^3.3.3",
+  "sass": "^1.65.1",
+  "sass-loader": "^13.3.2",
+  "tailwind-scrollbar": "^3.1.0",
+  "tailwindcss": "^3.2.7",
+  "vite": "^6.0.5",
+  "vite-plugin-vue-devtools": "^7.6.8"
   },
   "eslintConfig": {
-    "extends": [
-      "plugin:tailwindcss/recommended"
-    ]
+  "extends": [
+    "plugin:tailwindcss/recommended"
+  ]
+  },
+  "overrides": {
+  "picomatch": "^2.3.2"
   }
 }
