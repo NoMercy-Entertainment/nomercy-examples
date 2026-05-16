@@ -101,71 +101,11 @@ const playlist: PlaylistItem[] = [
 			},
 		],
 	},
-	{
-		id: 'cosmos-laundromat',
-		title: 'Cosmos Laundromat',
-		description: 'On a desolate island, a suicidal sheep named Franck meets his fate…in the form of a quirky salesman named Victor, who offers him the gift of a lifetime. The gift is many lifetimes, actually, in many different worlds – each lasting just a few minutes. In the sequel to the pilot, Franck will find a new reason to live…in the form of a bewitching female adventurer named Tara, who awakens his long-lost lust for life. But can Franck keep up with her?',
-		image: '/f2wABsgj2lIR2dkDEfBZX8p4Iyk.jpg',
-		file: '/Cosmos.Laundromat.(2015)/Cosmos.Laundromat.(2015).NoMercy.m3u8',
-		duration: '12:04',
-		episode: 2,
-		year: 2015,
-		tracks: [
-			{
-				id: 0,
-				label: 'Dutch (Full)',
-				file: '/Cosmos.Laundromat.(2015)/subtitles/Cosmos.Laundromat.(2015).NoMercy.dut.full.vtt',
-				language: 'dut',
-				kind: 'subtitles',
-			},
-			{
-				id: 1,
-				label: 'English (Full)',
-				type: 'sdh',
-				file: '/Cosmos.Laundromat.(2015)/subtitles/Cosmos.Laundromat.(2015).NoMercy.eng.full.vtt',
-				language: 'eng',
-				kind: 'subtitles',
-			},
-			{
-				id: 2,
-				label: 'French (Full)',
-				file: '/Cosmos.Laundromat.(2015)/subtitles/Cosmos.Laundromat.(2015).NoMercy.fre.full.vtt',
-				language: 'fre',
-				kind: 'subtitles',
-			},
-			{
-				id: 3,
-				label: 'Italian (Full)',
-				file: '/Cosmos.Laundromat.(2015)/subtitles/Cosmos.Laundromat.(2015).NoMercy.ita.full.vtt',
-				language: 'ita',
-				kind: 'subtitles',
-			},
-			{
-				id: 4,
-				label: 'Brazilian Portuguese (Full)',
-				file: '/Cosmos.Laundromat.(2015)/subtitles/Cosmos.Laundromat.(2015).NoMercy.pob.full.vtt',
-				language: 'pob',
-				kind: 'subtitles',
-			},
-			{
-				id: 5,
-				label: 'Spanish (Full)',
-				file: '/Cosmos.Laundromat.(2015)/subtitles/Cosmos.Laundromat.(2015).NoMercy.spa.full.vtt',
-				language: 'spa',
-				kind: 'subtitles',
-			},
-			{
-				id: 6,
-				file: '/Cosmos.Laundromat.(2015)/thumbs_160x68.vtt',
-				kind: 'thumbnails',
-			},
-			{
-				id: 7,
-				file: '/Cosmos.Laundromat.(2015)/thumbs_160x68.webp',
-				kind: 'sprite',
-			},
-		],
-	},
+	// Cosmos Laundromat is held from publish pending a re-encode (HEVC + LUT
+	// + font extraction were misclassified in the original pass). The files
+	// are not on nomercy-media yet; restore this entry once the re-encode
+	// lands and the asset paths are populated. See journal entry on the
+	// encoder LUT misclassification fix for context.
 	{
 		id: 'big-buck-bunny',
 		title: 'Big Buck Bunny',

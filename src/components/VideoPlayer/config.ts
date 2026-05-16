@@ -4,7 +4,7 @@ import type { PlayerConfig } from "@nomercy-entertainment/nomercy-video-player";
 import playlist from "./playlist";
 
 
-const BASE = 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films/Films';
+const BASE = 'https://raw.githubusercontent.com/NoMercy-Entertainment/nomercy-media/master/Films';
 const IMG_BASE = 'https://image.tmdb.org/t/p/w780';
 
 const config: PlayerConfig = {
