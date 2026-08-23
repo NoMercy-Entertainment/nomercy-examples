@@ -4205,7 +4205,7 @@ __metadata:
     eslint: "npm:^9.0.0"
     eslint-plugin-format: "npm:1.0.1"
     eslint-plugin-tailwindcss: "npm:^3.8.3"
-    postcss: "npm:^8.4.27"
+    postcss: "npm:^8.5.10"
     postcss-loader: "npm:^7.3.3"
     postcss-nested: "npm:^7.0.2"
     postcss-preset-env: "npm:^9.2.0"
@@ -4217,7 +4217,7 @@ __metadata:
     tailwind-merge: "npm:^2.6.0"
     tailwind-scrollbar: "npm:^3.1.0"
     tailwindcss: "npm:^3.2.7"
-    vite: "npm:^6.0.5"
+    vite: "npm:^6.4.2"
     vite-plugin-vue-devtools: "npm:^7.6.8"
     vue: "npm:^3.5.13"
     vue-meta: "npm:^2.4.0"
@@ -4932,7 +4932,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.27, postcss@npm:^8.4.4, postcss@npm:^8.4.47, postcss@npm:^8.5.14, postcss@npm:^8.5.3":
+"postcss@npm:^8.4.4, postcss@npm:^8.4.47, postcss@npm:^8.5.10, postcss@npm:^8.5.14, postcss@npm:^8.5.3":
   version: 8.5.26
   resolution: "postcss@npm:8.5.26"
   dependencies:
@@ -5787,7 +5787,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^6.0.5":
+"vite@npm:^6.4.2":
   version: 6.4.2
   resolution: "vite@npm:6.4.2"
   dependencies:

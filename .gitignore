@@ -30,3 +30,11 @@ coverage
 
 *.tsbuildinfo
 
+# Yarn Berry (PnP)
+.pnp.cjs
+.pnp.loader.mjs
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
