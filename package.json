@@ -48,6 +48,9 @@
       "plugin:tailwindcss/recommended"
     ]
   },
+  "resolutions": {
+    "postcss-selector-parser@npm:^7.0.0": "^7.1.3"
+  },
   "overrides": {
     "flatted": "^3.4.2"
   }
