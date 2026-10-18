@@ -875,7 +875,7 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 				menuFrame.classList.remove('open');
 
 				this.menuFrame.classList.remove('group-[&.nomercyplayer:has(.open)]:backdrop:!hidden');
-				this.center.classList.remove('!bg-none');
+				this.center.classList?.remove('!bg-none');
 
 				this.menuFrame.close();
 			}
@@ -913,7 +913,7 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 				menuContent.classList.remove('sub-menu-open');
 				menuFrame.style.display = 'flex';
 				this.menuFrame.classList.remove('group-[&.nomercyplayer:has(.open)]:backdrop:!hidden');
-				this.center.classList.remove('!bg-none');
+				this.center.classList?.remove('!bg-none');
 
 				setTimeout(() => {
 					(Array.from(this.mainMenu.children).find(el =>
@@ -1763,7 +1763,7 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 			if (property != false) {
 				subtitleSettingsMenu.style.display = 'flex';
 				this.menuFrame.classList.add('group-[&.nomercyplayer:has(.open)]:backdrop:!hidden');
-				this.center.classList.add('!bg-none');
+				this.center.classList?.add('!bg-none');
 
 				setTimeout(() => {
 					(scrollContainer.firstChild as HTMLButtonElement).focus();
@@ -1812,7 +1812,7 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 			if (data.property == property) {
 				subtitleSettingMenu.style.display = 'flex';
 				this.menuFrame.classList.add('group-[&.nomercyplayer:has(.open)]:backdrop:!hidden');
-				this.center.classList.add('!bg-none');
+				this.center.classList?.add('!bg-none');
 
 				setTimeout(() => {
 					(scrollContainer.firstChild as HTMLButtonElement).focus();
