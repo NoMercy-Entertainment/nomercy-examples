@@ -109,3 +109,116 @@ test("menus work when touch controls are disabled", () => {
     plugin.player.emit("show-subtitleSetting-menu", "fontFamily"),
   );
 });
+
+test("dispose removes global listeners installed by the desktop UI", () => {
+  function target() {
+    const listeners = new Map();
+    return {
+      addEventListener(name, listener) {
+        const group = listeners.get(name) ?? new Set();
+        group.add(listener);
+        listeners.set(name, group);
+      },
+      removeEventListener(name, listener) {
+        listeners.get(name)?.delete(listener);
+      },
+      dispatch(name, event = {}) {
+        for (const listener of listeners.get(name) ?? []) listener(event);
+      },
+      listenerCount(name) {
+        return listeners.get(name)?.size ?? 0;
+      },
+    };
+  }
+
+  function node() {
+    return Object.assign(target(), {
+      style: {},
+      children: [],
+      firstChild: { style: {} },
+      classList: { add() {}, remove() {} },
+      append(...children) { this.children.push(...children); },
+      appendChild(child) { this.children.push(child); },
+      remove() {},
+      setAttribute() {},
+    });
+  }
+
+  const html = node();
+  const document = Object.assign(target(), {
+    body: { parentElement: html },
+    hidden: true,
+    pictureInPictureEnabled: true,
+    createElement: node,
+  });
+  const window = target();
+  const DesktopUIPlugin = runInNewContext(`${javascript}\nDesktopUIPlugin`, {
+    BaseUIPlugin: class {}, document, window, textSizes: [], setTimeout() {},
+  });
+  const plugin = new DesktopUIPlugin();
+  const emitted = [];
+  let pipRequests = 0;
+  let resizes = 0;
+  plugin.player = {
+    on() {},
+    emit(name) { emitted.push(name); },
+    localize(value) { return value; },
+    container: { getBoundingClientRect: () => ({ width: 100 }) },
+    overlay: node(),
+    isMobile: () => false,
+    hasListeners: () => true,
+    hasPIP: () => true,
+    videoElement: {
+      requestPictureInPicture() {
+        pipRequests += 1;
+        return Promise.resolve();
+      },
+    },
+    createElement() {
+      const result = node();
+      const builder = {
+        addClasses() { return builder; },
+        appendTo() { return builder; },
+        get() { return result; },
+      };
+      return builder;
+    },
+  };
+  plugin.buttons = { pipEnter: {}, pipExit: {} };
+  plugin.createUiButton = () => node();
+  plugin.createSVGElement = () => {};
+  plugin.sizeMenuFrame = () => { resizes += 1; };
+
+  plugin.eventHandlers();
+  plugin.createPIPButton(node());
+  plugin.createMenuFrame(node());
+  plugin.pipEnabled = true;
+
+  window.dispatch("resize");
+  document.dispatch("keyup", { key: "?" });
+  document.dispatch("visibilitychange");
+  html.dispatch("click");
+  assert.equal(plugin.helpOverlay.style.display, "flex");
+  assert.equal(pipRequests, 1);
+  assert.equal(emitted.length, 9);
+  assert.ok(resizes > 1);
+
+  for (const name of ["topBar", "bottomBar", "bottomRow", "frame", "center", "tooltip", "episodeTip", "loader"]) {
+    plugin[name] = node();
+  }
+  plugin.dispose();
+  assert.equal(window.listenerCount("resize"), 0);
+  assert.equal(document.listenerCount("keyup"), 0);
+  assert.equal(document.listenerCount("visibilitychange"), 0);
+  assert.equal(html.listenerCount("click"), 0);
+
+  const previousResizes = resizes;
+  window.dispatch("resize");
+  document.dispatch("keyup", { key: "?" });
+  document.dispatch("visibilitychange");
+  html.dispatch("click");
+  assert.equal(resizes, previousResizes);
+  assert.equal(plugin.helpOverlay.style.display, "flex");
+  assert.equal(pipRequests, 1);
+  assert.equal(emitted.length, 9);
+});
