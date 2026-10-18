@@ -29,6 +29,11 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 	pipEnabled = false;
 	lockActive = false;
 	isAutoQuality = true;
+	private resizeHandler: (() => void) | null = null;
+	private helpKeyupHandler: ((event: KeyboardEvent) => void) | null = null;
+	private visibilityChangeHandler: (() => void) | null = null;
+	private rootClickHandler: (() => void) | null = null;
+	private rootElement: HTMLElement | null = null;
 
 	get isAnyMenuOpen(): boolean {
 		return this.menuOpen || this.mainMenuOpen || this.languageMenuOpen
@@ -165,6 +170,15 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 	}
 
 	dispose() {
+		if (this.resizeHandler) window.removeEventListener('resize', this.resizeHandler);
+		if (this.helpKeyupHandler) document.removeEventListener('keyup', this.helpKeyupHandler);
+		if (this.visibilityChangeHandler) document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+		if (this.rootClickHandler) this.rootElement?.removeEventListener('click', this.rootClickHandler);
+		this.resizeHandler = null;
+		this.helpKeyupHandler = null;
+		this.visibilityChangeHandler = null;
+		this.rootClickHandler = null;
+		this.rootElement = null;
 
 		this.topBar.remove();
 		this.bottomBar.remove();
@@ -241,9 +255,10 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 			}
 		});
 
-		window.addEventListener('resize', () => {
+		this.resizeHandler = () => {
 			this.sizeMenuFrame();
-		});
+		};
+		window.addEventListener('resize', this.resizeHandler);
 
 		// Subtitle size up/down via keyboard (+/-)
 		const sizeValues = textSizes.map(s => s.value);
@@ -433,7 +448,7 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 		overlay.style.display = 'none';
 
 		// Listen for ? key to toggle
-		document.addEventListener('keyup', (e) => {
+		this.helpKeyupHandler = (e) => {
 			if (document.activeElement?.nodeName === 'INPUT') return;
 			if (this.player.container.getBoundingClientRect().width === 0) return;
 
@@ -450,7 +465,8 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 				overlay.style.display = 'none';
 				this.player.lockActive = false;
 			}
-		});
+		};
+		document.addEventListener('keyup', this.helpKeyupHandler);
 	}
 
 	createCenter(parent: HTMLElement) {
@@ -743,7 +759,7 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 		this.createSVGElement(pipButton, 'pip-enter', this.buttons.pipEnter, false, hovered);
 		this.createSVGElement(pipButton, 'pip-exit', this.buttons.pipExit, true, hovered);
 
-		document.addEventListener('visibilitychange', () => {
+		this.visibilityChangeHandler = () => {
 			if (this.pipEnabled) {
 				if (document.hidden) {
 					if (document.pictureInPictureEnabled) {
@@ -753,7 +769,8 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 					document.exitPictureInPicture().then();
 				}
 			}
-		});
+		};
+		document.addEventListener('visibilitychange', this.visibilityChangeHandler);
 
 		pipButton.addEventListener('click', (event) => {
 			event.stopPropagation();
@@ -808,7 +825,7 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 			])
 			.appendTo(this.menuFrame).get();
 
-		(document.body.parentElement as HTMLElement).addEventListener('click', () => {
+		this.rootClickHandler = () => {
 			this.player.emit('show-menu', false);
 			this.player.emit('show-main-menu', false);
 			this.player.emit('show-language-menu', false);
@@ -818,7 +835,9 @@ export class DesktopUIPlugin extends BaseUIPlugin {
 			this.player.emit('show-quality-menu', false);
 			this.player.emit('show-speed-menu', false);
 			this.player.emit('show-playlist-menu', false);
-		});
+		};
+		this.rootElement = document.body.parentElement as HTMLElement;
+		this.rootElement.addEventListener('click', this.rootClickHandler);
 
 		const menuFrame = this.player.createElement('div', 'menu-frame')
 			.addClasses([
