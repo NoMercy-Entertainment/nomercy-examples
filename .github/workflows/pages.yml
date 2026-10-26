@@ -28,11 +28,16 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm install && npm install @rollup/rollup-linux-x64-gnu --save-dev
+      - name: Enable Corepack
+        run: corepack enable
 
+      # The pinned Yarn and its lockfile; a lockless npm install crashed from 2026-10-18 ('edgesOut').
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      # Yarn 4 runs no post-scripts, so postbuild runs by name.
       - name: Build
-        run: npm run build
+        run: yarn build && yarn postbuild
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
