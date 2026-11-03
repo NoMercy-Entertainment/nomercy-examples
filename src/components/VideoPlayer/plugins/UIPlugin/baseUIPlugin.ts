@@ -559,7 +559,7 @@ export class BaseUIPlugin extends Plugin {
 
 		button.ariaLabel = this.buttons[icon]?.title;
 
-		button.addEventListener('keypress', (event) => {
+		button.addEventListener('keydown', (event) => {
 			if (event.key === 'Backspace') {
 				button.blur();
 				this.player.emit('show-menu', false);
@@ -1980,7 +1980,7 @@ export class BaseUIPlugin extends Plugin {
 	}
 
 	addKeyEventsToLanguageButton(languageButton: HTMLButtonElement, parent: HTMLDivElement) {
-		languageButton.addEventListener('keypress', (e: KeyboardEvent) => {
+		languageButton.addEventListener('keydown', (e: KeyboardEvent) => {
 			if (e.key == 'ArrowLeft') {
 				this.getClosestElement(languageButton, '[id^="audio-button-"]')?.focus();
 			} else if (e.key == 'ArrowRight') {
