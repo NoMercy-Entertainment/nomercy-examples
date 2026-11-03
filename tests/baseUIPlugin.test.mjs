@@ -12,14 +12,15 @@ function node() {
   const listeners = new Map();
   return {
     style: {},
+    appendChild() {},
     addEventListener(name, listener) { listeners.set(name, listener); },
     dispatch(name, event) { listeners.get(name)?.(event); },
     focus() { this.focused = true; },
   };
 }
 
-function plugin() {
-  const BaseUIPlugin = runInNewContext(`${code}\nBaseUIPlugin`, { Plugin: class {}, setTimeout() {} });
+function plugin(globals = {}) {
+  const BaseUIPlugin = runInNewContext(`${code}\nBaseUIPlugin`, { Plugin: class {}, setTimeout() {}, ...globals });
   return new BaseUIPlugin();
 }
 
@@ -57,4 +58,29 @@ test('Escape on a control button closes the menu', () => {
   control.dispatch('keydown', { key: 'Escape' });
   assert.equal(control.blurred, true);
   assert.deepEqual(emitted, [['show-menu', false]]);
+});
+
+test('opening a playlist centers the current episode', () => {
+  const current = { scrollIntoView(options) { this.scrollOptions = options; } };
+  const document = {
+    querySelector() { return null; },
+    getElementById(id) { return id === 'playlist-episode-25' ? current : null; },
+  };
+  const instance = plugin({ document, setTimeout(callback) { callback(); } });
+  const button = node();
+  instance.createUiButton = () => button;
+  instance.createSVGElement = () => {};
+  instance.buttons = { playlist: {} };
+  instance.menuFrame = { showModal() {} };
+  instance.player = {
+    addClasses() {},
+    emit() {},
+    on() {},
+    playlistItem() { return { id: 'episode-25' }; },
+    hasPlaylists() { return true; },
+  };
+  instance.createPlaylistsButton(node());
+
+  button.dispatch('click', { stopPropagation() {} });
+  assert.equal(current.scrollOptions?.block, 'center');
 });

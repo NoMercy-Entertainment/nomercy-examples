@@ -1537,7 +1537,7 @@ export class BaseUIPlugin extends Plugin {
 				this.menuFrame.showModal();
 
 				setTimeout(() => {
-					document.querySelector(`playlist-${this.player.playlistItem().id}`)
+						document.getElementById(`playlist-${this.player.playlistItem().id}`)
 						?.scrollIntoView({ block: 'center' });
 				}, 100);
 			}
