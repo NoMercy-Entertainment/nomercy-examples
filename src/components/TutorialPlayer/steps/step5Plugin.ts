@@ -286,6 +286,15 @@ export class StepPlugin extends Plugin {
 			}, { passive: true });
 		});
 
+		this.sliderBar.addEventListener('touchend', (event: TouchEvent) => {
+			if (!this.isMouseDown) return;
+			this.isMouseDown = false;
+			const percent = getPercentFromEvent(event);
+			this.player.seek(this.player.duration() * (percent / 100));
+			sliderNipple.style.left = `${percent}%`;
+			sliderProgress.style.width = `${percent}%`;
+		}, { passive: true });
+
 		this.sliderBar.addEventListener('mouseleave', () => {
 			this.isMouseDown = false;
 		}, { passive: true });
