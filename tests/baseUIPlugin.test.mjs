@@ -13,8 +13,12 @@ function node() {
   return {
     style: {},
     appendChild() {},
-    addEventListener(name, listener) { listeners.set(name, listener); },
-    dispatch(name, event) { listeners.get(name)?.(event); },
+    addEventListener(name, listener, options) { listeners.set(name, { listener, options }); },
+    dispatch(name, event) {
+      const registered = listeners.get(name);
+      if (registered) registered.listener(event);
+    },
+    listenerOptions(name) { return listeners.get(name)?.options; },
     focus() { this.focused = true; },
   };
 }
@@ -83,4 +87,39 @@ test('opening a playlist centers the current episode', () => {
 
   button.dispatch('click', { stopPropagation() {} });
   assert.equal(current.scrollOptions?.block, 'center');
+});
+
+test('wheel over volume cancels page scrolling', () => {
+  const instance = plugin();
+  const elements = new Map();
+  instance.player = {
+    isMobile() { return false; },
+    createElement(_tag, id) {
+      const element = node();
+      elements.set(id, element);
+      const builder = {
+        addClasses() { return builder; },
+        appendTo() { return builder; },
+        get() { return element; },
+      };
+      return builder;
+    },
+    volume(value) { return value ?? 50; },
+    on() {},
+  };
+  instance.buttons = { volume: {}, volumeHigh: {} };
+  instance.createUiButton = () => node();
+  instance.createSVGElement = () => node();
+  const container = instance.createVolumeButton(node());
+  const event = {
+    deltaX: 0,
+    deltaY: 0,
+    defaultPrevented: false,
+    preventDefault() {
+      if (!container.listenerOptions('wheel')?.passive) this.defaultPrevented = true;
+    },
+  };
+
+  container.dispatch('wheel', event);
+  assert.equal(event.defaultPrevented, true);
 });

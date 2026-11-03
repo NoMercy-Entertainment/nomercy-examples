@@ -1023,7 +1023,7 @@ export class BaseUIPlugin extends Plugin {
 			volumeSlider.value = (parseFloat(volumeSlider.value) + (delta * 0.50)).toString();
 			this.player.volume(parseFloat(volumeSlider.value));
 		}, {
-			passive: true,
+			passive: false,
 		});
 
 		this.player.on('volume', (data) => {
