@@ -105,7 +105,13 @@
 		var player = nmplayer('player').setup(config);
 
 		// Register and activate OctopusPlugin for ASS rendering
-		player.registerPlugin('octopus', new nmplayer.OctopusPlugin({ renderAhead: 10 }));
+		// The local copy of the subtitle worker; the plugin's CDN default resolves to an old build.
+		player.registerPlugin('octopus', new nmplayer.OctopusPlugin({
+			renderAhead: 10,
+			workerUrl: '/js/octopus/subtitles-octopus-worker.js',
+			legacyWorkerUrl: '/js/octopus/subtitles-octopus-worker-legacy.js',
+			fallbackFont: '/js/octopus/default.ttf',
+		}));
 		player.usePlugin('octopus');
 
 		function toggleSubs(on) {

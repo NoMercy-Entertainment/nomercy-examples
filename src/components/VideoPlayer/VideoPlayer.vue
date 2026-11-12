@@ -25,7 +25,13 @@ onMounted(() => {
     player.value = nmplayer('player1')
         .setup({ ...config, language: props.language }) as unknown as NMPlayer;
 
-  const octopusPlugin = new OctopusPlugin({ renderAhead: 10 });
+  // The local copy of the subtitle worker; the plugin's CDN default resolves to an old build.
+  const octopusPlugin = new OctopusPlugin({
+    renderAhead: 10,
+    workerUrl: '/js/octopus/subtitles-octopus-worker.js',
+    legacyWorkerUrl: '/js/octopus/subtitles-octopus-worker-legacy.js',
+    fallbackFont: '/js/octopus/default.ttf',
+  });
   player.value?.registerPlugin('octopus', octopusPlugin);
   player.value?.usePlugin('octopus');
 
