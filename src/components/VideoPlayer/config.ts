@@ -4,7 +4,9 @@ import type { PlayerConfig } from "@nomercy-entertainment/nomercy-video-player";
 import playlist from "./playlist";
 
 
-const BASE = 'https://raw.githubusercontent.com/NoMercy-Entertainment/nomercy-media/master/Films';
+// The v1 player puts basePath in front of every playlist path, even an absolute one,
+// so every playlist path is relative to the media repo root (#24).
+const BASE = 'https://raw.githubusercontent.com/NoMercy-Entertainment/nomercy-media/master';
 const IMG_BASE = 'https://image.tmdb.org/t/p/w780';
 
 const config: PlayerConfig = {
