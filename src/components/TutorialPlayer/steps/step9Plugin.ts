@@ -26,7 +26,9 @@ export class StepPlugin extends PlayerUIPlugin {
     const timeFile = this.player.timeFile();
     if (!imageFile || !timeFile) return;
 
-    this.sliderPopImage.style.backgroundImage = `url('${imageFile}')`;
+    // A relative sprite path loads from basePath, like the other playlist files.
+    const imageUrl = imageFile.startsWith('http') ? imageFile : (this.player.options.basePath ?? '') + imageFile;
+    this.sliderPopImage.style.backgroundImage = `url('${imageUrl}')`;
 
     this.player.getFileContents<string>({
       url: timeFile,

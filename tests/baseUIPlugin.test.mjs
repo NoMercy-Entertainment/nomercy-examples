@@ -123,3 +123,29 @@ test('wheel over volume cancels page scrolling', () => {
   container.dispatch('wheel', event);
   assert.equal(event.defaultPrevented, true);
 });
+
+function spriteSrc(spriteFile) {
+  const images = [];
+  const instance = plugin({ Image: class { constructor() { images.push(this); } remove() {} } });
+  instance.previewTime = [];
+  instance.sliderPopImage = node();
+  instance.player = {
+    options: { basePath: 'https://media.example.com/root' },
+    spriteFile: () => spriteFile,
+    timeFile: () => null,
+    once() {},
+  };
+  instance.fetchPreviewTime();
+  return { background: instance.sliderPopImage.style.backgroundImage, img: images[0].src };
+}
+
+test('a relative sprite path loads from basePath, like the other playlist files', () => {
+  assert.deepEqual(spriteSrc('/Films/a/thumbs.webp'), {
+    background: "url('https://media.example.com/root/Films/a/thumbs.webp')",
+    img: 'https://media.example.com/root/Films/a/thumbs.webp',
+  });
+});
+
+test('an absolute sprite URL is used as it is', () => {
+  assert.equal(spriteSrc('https://cdn.example.com/thumbs.webp').img, 'https://cdn.example.com/thumbs.webp');
+});

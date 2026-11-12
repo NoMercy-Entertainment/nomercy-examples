@@ -469,11 +469,15 @@ export class BaseUIPlugin extends Plugin {
 						},
 					}).then();
 				} else {
+					// Same rule as getFileContents: a relative path loads from basePath.
+					const imageUrl = imageFile.startsWith('http')
+						? imageFile
+						: (this.player.options.basePath ?? '') + imageFile;
 					if (this.sliderPopImage.style) {
-						this.sliderPopImage.style.backgroundImage = `url('${imageFile}')`;
+						this.sliderPopImage.style.backgroundImage = `url('${imageUrl}')`;
 					}
 
-					img.src = imageFile;
+					img.src = imageUrl;
 					setTimeout(() => {
 						this.player.emit('preview-time', this.previewTime);
 					}, 400);
