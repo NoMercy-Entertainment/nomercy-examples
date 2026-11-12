@@ -27,3 +27,16 @@ test('no page points at the old double media folders', () => {
 	}
 	assert.deepEqual(stale, []);
 });
+
+// The media repo regenerated the Sintel thumbnails at 320px (media fc1cce5); the 256px files are gone.
+const OLD_THUMBS = /thumbs_256x109\./;
+
+test('no page points at the removed 256px thumbnails', () => {
+	const stale = [];
+	for (const file of [...sources(join(root, 'src')), ...sources(join(root, 'public'))]) {
+		readFileSync(file, 'utf8').split('\n').forEach((line, i) => {
+			if (OLD_THUMBS.test(line)) stale.push(`${relative(root, file)}:${i + 1}`);
+		});
+	}
+	assert.deepEqual(stale, []);
+});

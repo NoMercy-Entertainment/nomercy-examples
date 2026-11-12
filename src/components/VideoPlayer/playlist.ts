@@ -86,7 +86,7 @@ const playlist: PlaylistItem[] = [
 			},
 			{
 				id: 10,
-				file: '/Films/Sintel.(2010)/thumbs_256x109.vtt',
+				file: '/Films/Sintel.(2010)/thumbs_320x136.vtt',
 				kind: 'thumbnails',
 			},
 			{
@@ -96,7 +96,7 @@ const playlist: PlaylistItem[] = [
 			},
 			{
 				id: 12,
-				file: '/Films/Sintel.(2010)/thumbs_256x109.webp',
+				file: '/Films/Sintel.(2010)/thumbs_320x136.webp',
 				kind: 'sprite',
 			},
 		],
