@@ -27,7 +27,6 @@ onMounted(() => {
 
   // The local copy of the subtitle worker; the plugin's CDN default resolves to an old build.
   const octopusPlugin = new OctopusPlugin({
-    renderAhead: 10,
     workerUrl: '/js/octopus/subtitles-octopus-worker.js',
     legacyWorkerUrl: '/js/octopus/subtitles-octopus-worker-legacy.js',
     fallbackFont: '/js/octopus/default.ttf',
