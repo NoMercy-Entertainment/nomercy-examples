@@ -6,9 +6,9 @@ const githubUrl = computed(() => {
   const pathname = window.location.pathname;
 
   if (pathname === '/videoplayer') {
-    return 'https://github.com/NoMercy-Entertainment/nomercy-video-player';
+    return 'https://github.com/NoMercy-Entertainment/nomercy-player-web/tree/master/packages/video-player';
   } else if (pathname === '/musicplayer') {
-    return 'https://github.com/NoMercy-Entertainment/nomercy-music-player'
+    return 'https://github.com/NoMercy-Entertainment/nomercy-player-web/tree/master/packages/music-player'
   } else {
     return 'https://github.com/NoMercy-Entertainment';
   }
