@@ -28,6 +28,8 @@ for (const item of list) {
 				const media = () => document.querySelector(isMusic ? 'audio' : 'video');
 				const now = () => (isMusic ? window.player.time() : media().currentTime);
 				if (media()) media().muted = true;
+				// item() before the player is ready loses autoplay: setup pauses the element.
+				await window.player.ready?.();
 				let mediaError = null;
 				window.player.on?.('fatal', e => { mediaError ??= e?.message ?? 'fatal'; });
 				window.player.on?.('itemFailed', e => { mediaError ??= e?.error?.message ?? 'itemFailed'; });
