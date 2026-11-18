@@ -1314,21 +1314,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomercy-entertainment/nomercy-music-player@npm:^2.9.0":
-  version: 2.9.0
-  resolution: "@nomercy-entertainment/nomercy-music-player@npm:2.9.0"
+"@nomercy-entertainment/nomercy-music-player@npm:^2.9.1":
+  version: 2.9.1
+  resolution: "@nomercy-entertainment/nomercy-music-player@npm:2.9.1"
   dependencies:
-    "@nomercy-entertainment/nomercy-player-core": "npm:2.9.1"
-  checksum: 10c0/606e942ee642624a72e550292212e4be0cc029ad976dcc921b1fe1131ab69df7c6d3bbd36e09f8cd232811fd1812f31b8982f575c69b8f7918fcf0e75dd439d8
+    "@nomercy-entertainment/nomercy-player-core": "npm:2.9.2"
+  checksum: 10c0/d7a31257a72f3ad61718a78397d4b44330da599a2d39248b262ebab3d183b56c6deb48af1dfd3fdc7b4bddde19a177e1e0963bc7a69c0e7a6df4e69ebd5d1455
   languageName: node
   linkType: hard
 
-"@nomercy-entertainment/nomercy-player-core@npm:2.9.1":
-  version: 2.9.1
-  resolution: "@nomercy-entertainment/nomercy-player-core@npm:2.9.1"
+"@nomercy-entertainment/nomercy-player-core@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@nomercy-entertainment/nomercy-player-core@npm:2.9.2"
   dependencies:
     hls.js: "npm:^1.6.0"
-  checksum: 10c0/399f3bc5d05cfd2bad8b4c42829ab22aa50a80090244475832ae95239ccd6a13182dfee314f651dbce6ec0d978f552e6a7ba185e7027a4b8631ef5b7c43f9543
+  checksum: 10c0/a7523aaeec71f7cd90626e071edae9850c757944a35b607ec9a27b9b54d0ee9a3ff332dad3e9aa3d12b255917edd5850f0d123b78b80b975a7c4cc98160c67cb
   languageName: node
   linkType: hard
 
@@ -1339,13 +1339,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomercy-entertainment/nomercy-video-player@npm:^2.9.0":
-  version: 2.9.0
-  resolution: "@nomercy-entertainment/nomercy-video-player@npm:2.9.0"
+"@nomercy-entertainment/nomercy-video-player@npm:^2.9.1":
+  version: 2.9.1
+  resolution: "@nomercy-entertainment/nomercy-video-player@npm:2.9.1"
   dependencies:
-    "@nomercy-entertainment/nomercy-player-core": "npm:2.9.1"
+    "@nomercy-entertainment/nomercy-player-core": "npm:2.9.2"
     "@nomercy-entertainment/nomercy-subtitle-octopus": "npm:^0.2.0"
-  checksum: 10c0/64d711531acf3c27ff1f12fdba02910b6e297dce26a0d6bcf06a152f50f8334f8c8cb61b0544629f3abeb5aa0dedc81a1df3da5045e1ee830c6aaec65b5695ee
+  checksum: 10c0/b453083361c89081d154f294b8f3914e6d28759357348a2c406abbdc4bfd355f7dbca53e29dc3c48e3c6fc94210b2de4052d3eb5e14d634553acb8fcec42b1f1
   languageName: node
   linkType: hard
 
@@ -4044,8 +4044,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nomercy-examples@workspace:."
   dependencies:
-    "@nomercy-entertainment/nomercy-music-player": "npm:^2.9.0"
-    "@nomercy-entertainment/nomercy-video-player": "npm:^2.9.0"
+    "@nomercy-entertainment/nomercy-music-player": "npm:^2.9.1"
+    "@nomercy-entertainment/nomercy-video-player": "npm:^2.9.1"
     "@playwright/test": "npm:^1.60"
     "@tailwindcss/line-clamp": "npm:^0.4.4"
     "@types/node": "npm:^22.10.5"
