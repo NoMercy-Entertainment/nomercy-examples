@@ -67,12 +67,12 @@
 		<div class="event-stream" id="stream"></div>
 	</main>
 
-	<script src="https://cdn.jsdelivr.net/npm/@nomercy-entertainment/nomercy-video-player@1.0.0-beta.28/dist/nomercy-video-player.iife.js"></script>
+	<script type="module" src="player.js"></script>
 	<script src="event-stream.js"></script>
-	<script>
+	<script type="module">
 		var config = {
-			basePath: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films',
-			imageBasePath: 'https://image.tmdb.org/t/p/w780',
+			baseUrl: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films',
+			baseImageUrl: 'https://image.tmdb.org/t/p/w780',
 			playlist: [
 				{
 					id: 'sintel',
@@ -114,11 +114,13 @@
 			],
 		};
 
-		var player = nmplayer('player').setup(config);
+		window.player = nmplayer('player')
+			.addPlugin(nmPlugins.DesktopUiPlugin)
+			.setup(config);
 
 		// Now Playing card
 		function updateNowPlaying(item) {
-			document.getElementById('np-img').src = player.resolveImageUrl(item.image) || '';
+			document.getElementById('np-img').src = item.image ? config.baseImageUrl + item.image : '';
 			document.getElementById('np-title').textContent = item.title;
 			document.getElementById('np-meta').textContent =
 				'S' + item.season + ' E' + item.episode + ' · ' + item.show + ' · ' + item.year;
@@ -127,12 +129,12 @@
 
 		// Aspect buttons
 		function setAspect(mode) {
-			player.aspect(mode);
+			player.aspectRatio(mode);
 			updateAspect();
 		}
 
 		function updateAspect() {
-			var current = player.aspect();
+			var current = player.aspectRatio();
 			var btns = document.querySelectorAll('#aspect-row button');
 			var names = [null, 'uniform', 'fill', 'exactfit', '16:9', '4:3'];
 			btns.forEach(function (btn, i) {
@@ -142,40 +144,42 @@
 
 		// Save / Reset position
 		function savePosition() {
-			var time = player.currentTime();
-			var item = player.playlistItem();
+			var time = player.time();
+			var item = player.item();
 			item.progress = { time: Math.round(time), date: new Date().toISOString() };
 		}
 
 		function resetPosition() {
-			var item = player.playlistItem();
+			var item = player.item();
 			delete item.progress;
-			player.seek(0);
+			player.time(0);
 		}
+
+		Object.assign(window, { setAspect, updateAspect, savePosition, resetPosition });
 
 		// Keyboard shortcuts
 		document.addEventListener('keydown', function (e) {
 			if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 			switch (e.key) {
-				case ' ': e.preventDefault(); player.state() === 'playing' ? player.pause() : player.play(); break;
-				case 'ArrowLeft': player.seek(Math.max(0, player.currentTime() - 10)); break;
-				case 'ArrowRight': player.seek(player.currentTime() + 10); break;
+				case ' ': e.preventDefault(); player.togglePlayback(); break;
+				case 'ArrowLeft': player.time(Math.max(0, player.time() - 10)); break;
+				case 'ArrowRight': player.time(player.time() + 10); break;
 				case 'ArrowUp': e.preventDefault(); player.volume(Math.min(100, player.volume() + 10)); break;
 				case 'ArrowDown': e.preventDefault(); player.volume(Math.max(0, player.volume() - 10)); break;
-				case 'm': case 'M': player.muted(!player.muted()); break;
+				case 'm': case 'M': player.toggleMute(); break;
 			}
 		});
 
 		// Update now playing card on item change
-		player.on('item', updateNowPlaying);
+		player.on('item', function (event) { if (event.item) updateNowPlaying(event.item); });
 
-		var es = createEventStream(player, {
+		window.es = createEventStream(player, {
 			categories: {
-				playback:  { color: '#4ade80', events: ['play', 'pause', 'seek', 'complete', 'firstFrame'] },
+				playback:  { color: '#4ade80', events: ['play', 'pause', 'seek', 'ended', 'firstFrame'] },
 				time:      { color: '#facc15', events: ['time'] },
-				playlist:  { color: '#c084fc', events: ['item', 'playlistComplete', 'playlistItem'] },
-				display:   { color: '#22d3ee', events: ['fullscreen', 'resize', 'active'] },
-				lifecycle: { color: '#a1a1aa', events: ['ready', 'beforePlay', 'idle'] },
+				playlist:  { color: '#c084fc', events: ['item', 'queue', 'next', 'previous'] },
+				display:   { color: '#22d3ee', events: ['fullscreen', 'theater'] },
+				lifecycle: { color: '#a1a1aa', events: ['ready', 'beforePlay', 'phase'] },
 			},
 		});
 	</script>

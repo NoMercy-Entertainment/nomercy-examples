@@ -44,7 +44,7 @@ function wikiItems() {
 	const items = [];
 	for (const file of readdirSync(dir).filter(name => name.endsWith('.html')).sort()) {
 		const text = readFileSync(join(dir, file), 'utf8');
-		const base = text.match(/basePath: '([^']+)'/u)?.[1];
+		const base = text.match(/(?:basePath|baseUrl): '([^']+)'/u)?.[1];
 		if (!base) continue;
 		let title = '';
 		for (const line of text.split('\n')) {

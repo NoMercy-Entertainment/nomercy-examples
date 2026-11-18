@@ -33,12 +33,12 @@
 		<div class="event-stream" id="stream"></div>
 	</main>
 
-	<script src="https://cdn.jsdelivr.net/npm/@nomercy-entertainment/nomercy-video-player@1.0.0-beta.28/dist/nomercy-video-player.iife.js"></script>
+	<script type="module" src="player.js"></script>
 	<script src="event-stream.js"></script>
-	<script>
+	<script type="module">
 		var config = {
-			basePath: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films/Sintel.(2010)',
-			imageBasePath: 'https://image.tmdb.org/t/p/w780',
+			baseUrl: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films/Sintel.(2010)',
+			baseImageUrl: 'https://image.tmdb.org/t/p/w780',
 			playlist: [{
 				id: 'sintel',
 				title: 'Sintel',
@@ -49,11 +49,13 @@
 			}],
 		};
 
-		var player = nmplayer('player').setup(config);
+		window.player = nmplayer('player')
+			.addPlugin(nmPlugins.DesktopUiPlugin)
+			.setup(config);
 
-		var es = createEventStream(player, {
+		window.es = createEventStream(player, {
 			categories: {
-				playback:  { color: '#4ade80', events: ['play', 'pause', 'seek', 'complete', 'firstFrame'] },
+				playback:  { color: '#4ade80', events: ['play', 'pause', 'seek', 'ended', 'firstFrame'] },
 				time:      { color: '#facc15', events: ['time'] },
 				lifecycle: { color: '#a1a1aa', events: ['ready', 'beforePlay', 'idle'] },
 			},

@@ -40,12 +40,12 @@
 		<div class="event-stream" id="stream"></div>
 	</main>
 
-	<script src="https://cdn.jsdelivr.net/npm/@nomercy-entertainment/nomercy-video-player@1.0.0-beta.28/dist/nomercy-video-player.iife.js"></script>
+	<script type="module" src="player.js"></script>
 	<script src="event-stream.js"></script>
-	<script>
+	<script type="module">
 		var config = {
-			basePath: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films',
-			imageBasePath: 'https://image.tmdb.org/t/p/w780',
+			baseUrl: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films',
+			baseImageUrl: 'https://image.tmdb.org/t/p/w780',
 			playlist: [
 				{
 					id: 'sintel',
@@ -66,18 +66,20 @@
 			],
 		};
 
-		var player = nmplayer('player').setup(config);
+		window.player = nmplayer('player')
+			.addPlugin(nmPlugins.DesktopUiPlugin)
+			.setup(config);
 
-		var es = createEventStream(player, {
+		window.es = createEventStream(player, {
 			categories: {
-				playback:  { color: '#4ade80', events: ['play', 'pause', 'seek', 'complete', 'firstFrame'] },
-				media:     { color: '#60a5fa', events: ['bufferChange', 'levels', 'levelsChanged', 'audioTracks', 'subtitleList'] },
+				playback:  { color: '#4ade80', events: ['play', 'pause', 'seek', 'ended', 'firstFrame'] },
+				media:     { color: '#60a5fa', events: ['progress', 'mediaReady', 'playlistReady'] },
 				time:      { color: '#facc15', events: ['time'] },
-				playlist:  { color: '#c084fc', events: ['item', 'playlistComplete', 'playlistItem', 'playlist'] },
-				display:   { color: '#22d3ee', events: ['fullscreen', 'resize', 'active', 'float', 'pip', 'theater'] },
-				ui:        { color: '#fb923c', events: ['interaction', 'player-click', 'player-dblclick', 'message', 'message-dismiss'] },
-				errors:    { color: '#f87171', events: ['error', 'warning', 'setupError'] },
-				lifecycle: { color: '#a1a1aa', events: ['ready', 'beforePlay', 'idle'] },
+				playlist:  { color: '#c084fc', events: ['item', 'queue', 'next', 'previous'] },
+				display:   { color: '#22d3ee', events: ['fullscreen', 'pip', 'theater'] },
+				ui:        { color: '#fb923c', events: ['volume', 'mute', 'playbackRate'] },
+				errors:    { color: '#f87171', events: ['error', 'warning', 'fatal'] },
+				lifecycle: { color: '#a1a1aa', events: ['ready', 'beforePlay', 'phase'] },
 			},
 		});
 	</script>
