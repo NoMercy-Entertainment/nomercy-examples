@@ -112,6 +112,17 @@ test.describe('twitch page', () => {
 		await playsRaw(page, browserName, channel, 'channel');
 	});
 
+	test('the player switch shows which player is active', async ({ page }) => {
+		if (pages && !pages.includes('/twitch')) test.skip();
+		await page.goto('/twitch');
+		const checked = () => page.locator('#menu li').filter({ hasText: 'checkmark' }).allInnerTexts();
+		expect((await checked()).join()).toContain('NoMercy player');
+		await page.locator('#menu').getByText('Twitch embed', { exact: true }).click();
+		const after = (await checked()).join();
+		expect(after).toContain('Twitch embed');
+		expect(after).not.toContain('NoMercy player');
+	});
+
 	test('the Twitch embed choice loads the embed for a live channel', async ({ page }) => {
 		if (pages && !pages.includes('/twitch')) test.skip();
 		const channel = await liveChannel();

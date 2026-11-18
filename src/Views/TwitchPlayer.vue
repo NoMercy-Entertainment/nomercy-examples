@@ -53,8 +53,8 @@ const createPlayer = () => {
   instance.on('plugin:twitch:channel:ended' as never, (({ channel: name }: { channel: string }) => {
     message.value = `The stream of ${name} has ended.`;
   }) as never);
+  // Only a fatal error stops playback; the player recovers from plain 'error' events by itself.
   instance.on('fatal', () => { message.value = blocked; });
-  instance.on('error', () => { message.value = blocked; });
   instance.on('playing', () => { message.value = ''; });
 
   player = instance;
@@ -82,11 +82,15 @@ const play = async () => {
 // Live channels play either in the NoMercy player (raw stream via the relay) or in Twitch's own embed.
 // Clips always play raw; VODs always use the embed (Twitch locks VOD video to its own site).
 const useEmbed = ref(false);
+const useNoMercy = ref(true);
 
 const choosePlayer = (embed: boolean) => {
+  if (useEmbed.value === embed) return;
   useEmbed.value = embed;
+  useNoMercy.value = !embed;
+  // A playing channel restarts in the chosen player; the old message belongs to the old player.
+  message.value = '';
   player?.getPlugin(TwitchPlugin)?.useTwitchPlayer(embed);
-  message.value = embed ? 'Live channels play in Twitch\'s embed.' : 'Live channels play in the NoMercy player.';
 };
 
 const options: Option[] = [
@@ -103,11 +107,13 @@ const options: Option[] = [
   {
     label: 'NoMercy player',
     level: 0,
+    active: useNoMercy,
     action: () => choosePlayer(false),
   },
   {
     label: 'Twitch embed',
     level: 0,
+    active: useEmbed,
     action: () => choosePlayer(true),
   },
 ];

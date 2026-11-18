@@ -17,7 +17,15 @@ export async function liveChannel() {
 	return data?.streams?.edges?.[0]?.node?.broadcaster?.login;
 }
 
-export async function clipSlug(login = 'twitch') {
-	const data = await gql(`{ user(login: "${login}") { clips(first: 1, criteria: { period: LAST_MONTH }) { edges { node { slug } } } } }`);
-	return data?.user?.clips?.edges?.[0]?.node?.slug;
+// Any one channel can have no clip in a period, so try the live channel and a few big ones over two periods.
+export async function clipSlug() {
+	const logins = [await liveChannel(), 'twitch', 'twitchgaming', 'riotgames'].filter(Boolean);
+	for (const period of ['LAST_WEEK', 'ALL_TIME']) {
+		for (const login of logins) {
+			const data = await gql(`{ user(login: "${login}") { clips(first: 1, criteria: { period: ${period} }) { edges { node { slug } } } } }`);
+			const slug = data?.user?.clips?.edges?.[0]?.node?.slug;
+			if (slug) return slug;
+		}
+	}
+	return undefined;
 }
