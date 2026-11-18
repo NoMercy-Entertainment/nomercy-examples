@@ -42,6 +42,13 @@ export const routes: Array<RouteRecordRaw> = [
 		}
 	},
 	{
+		path: '/twitch',
+		component: () => import('@/Views/TwitchPlayer.vue'),
+		props: {
+			theme: 'theme-3',
+		}
+	},
+	{
 		path: '/page3',
 		component: () => import('@/Views/Page3.vue'),
 		props: {

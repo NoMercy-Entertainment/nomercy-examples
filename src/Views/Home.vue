@@ -3,6 +3,7 @@ import GithubCorner from "@/components/GithubCorner.vue";
 import HomeCard from "@/components/HomeCard.vue";
 import VideoPlayerCard from "@/components/VideoPlayer/VideoPlayerCard.vue";
 import MusicPlayerCard from "@/components/MusicPlayer/MusicPlayerCard.vue";
+import TwitchPlayerCard from "@/components/TwitchPlayer/TwitchPlayerCard.vue";
 </script>
 
 <template>
@@ -18,6 +19,8 @@ import MusicPlayerCard from "@/components/MusicPlayer/MusicPlayerCard.vue";
     <VideoPlayerCard />
 
     <MusicPlayerCard />
+
+    <TwitchPlayerCard />
 
     <HomeCard route="/page3">
     </HomeCard>
