@@ -74,8 +74,19 @@ const play = async () => {
 
   // item() before the player is ready loses autoplay: setup pauses the element.
   await player!.ready();
+  player!.getPlugin(TwitchPlugin)?.useTwitchPlayer(useEmbed.value);
   player!.queue([{ id: source.url, title: source.title, url: source.url }]);
   await player!.item(0, { autoplay: true });
+};
+
+// Live channels play either in the NoMercy player (raw stream via the relay) or in Twitch's own embed.
+// Clips always play raw; VODs always use the embed (Twitch locks VOD video to its own site).
+const useEmbed = ref(false);
+
+const choosePlayer = (embed: boolean) => {
+  useEmbed.value = embed;
+  player?.getPlugin(TwitchPlugin)?.useTwitchPlayer(embed);
+  message.value = embed ? 'Live channels play in Twitch\'s embed.' : 'Live channels play in the NoMercy player.';
 };
 
 const options: Option[] = [
@@ -88,6 +99,16 @@ const options: Option[] = [
     label: 'Pause',
     level: 0,
     action: () => { void player?.pause(); },
+  },
+  {
+    label: 'NoMercy player',
+    level: 0,
+    action: () => choosePlayer(false),
+  },
+  {
+    label: 'Twitch embed',
+    level: 0,
+    action: () => choosePlayer(true),
   },
 ];
 

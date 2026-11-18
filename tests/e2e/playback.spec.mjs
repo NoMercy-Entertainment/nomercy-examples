@@ -112,6 +112,19 @@ test.describe('twitch page', () => {
 		await playsRaw(page, browserName, channel, 'channel');
 	});
 
+	test('the Twitch embed choice loads the embed for a live channel', async ({ page }) => {
+		if (pages && !pages.includes('/twitch')) test.skip();
+		const channel = await liveChannel();
+		await page.goto('/twitch');
+		await page.locator('#menu').getByText('Twitch embed', { exact: true }).click();
+		await page.fill('#twitch-channel', channel);
+		await page.click('#twitch-play');
+		const src = await page.waitForFunction(() => document.querySelector('iframe[src*="player.twitch.tv"]')?.src ?? null, null, { timeout: 30_000 }).then(h => h.jsonValue());
+		const url = new URL(src);
+		expect(url.searchParams.get('channel')).toBe(channel);
+		expect(url.searchParams.get('parent')).toBe(new URL(page.url()).hostname);
+	});
+
 	test('a clip link plays its raw file in this player', async ({ page, browserName }) => {
 		if (pages && !pages.includes('/twitch')) test.skip();
 		const slug = await clipSlug();
