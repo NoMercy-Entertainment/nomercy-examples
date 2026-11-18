@@ -43,6 +43,7 @@ defineProps({
 
     <aside id="menu"
       class="relative overflow-clip bg-gradient-to-b from-neutral-800 to-neutral-900 rounded-lg shadow-lg flex flex-col w-full landscape:w-3/5 sm:w-1/3 max-w-sm min-h-[40dvh] sm:h-available max-h-[min(39.5vw,90vh)] border border-neutral-700 p-2 sm:p-4 sm:mr-auto">
+      <slot name="menu" />
       <Menu :options="options as Option[]" :class="theme" :style="`
                   --color-1: var(--color-${theme}-shadow);
                   --color-2: var(--color-${theme}-border);
@@ -50,7 +51,7 @@ defineProps({
     </aside>
 
     <main id="wrapper"
-      class="sm:max-h-fit relative overflow-hidden bg-gradient-to-b from-neutral-800 to-neutral-900 rounded-lg shadow-lg flex flex-col h-full w-full aspect-[16/10] 5xl:aspect-[16/9.5] sm:max-w-[120rem] border border-neutral-700 p-2 sm:p-4 z-0">
+      class="relative overflow-hidden bg-gradient-to-b from-neutral-800 to-neutral-900 rounded-lg shadow-lg flex flex-col w-full aspect-[16/10] 5xl:aspect-[16/9.5] sm:max-w-[120rem] border border-neutral-700 p-2 sm:p-4 z-0">
       <slot />
     </main>
   </div>

@@ -22,15 +22,15 @@ const field = ref('');
 const message = ref('');
 let player: NMVideoPlayer | undefined;
 
-const channelFrom = (value: string): string | undefined => {
+// A channel name, or any twitch.tv link (channel, clip, VOD): the plugin reads the link itself.
+const sourceFrom = (value: string): { url: string; title: string } | undefined => {
   const text = value.trim();
-  if (CHANNEL_NAME.test(text)) return text.toLowerCase();
+  if (CHANNEL_NAME.test(text)) return { url: `https://www.twitch.tv/${text.toLowerCase()}`, title: text.toLowerCase() };
 
   try {
     const url = new URL(/^https?:\/\//u.test(text) ? text : `https://${text}`);
-    if (!/^(?:www\.|m\.)?twitch\.tv$/u.test(url.hostname)) return undefined;
-    const name = url.pathname.split('/').filter(Boolean)[0] ?? '';
-    return CHANNEL_NAME.test(name) ? name.toLowerCase() : undefined;
+    if (!/^(?:www\.|m\.|clips\.)?twitch\.tv$/u.test(url.hostname)) return undefined;
+    return url.pathname.length > 1 ? { url: url.href, title: url.pathname.split('/').filter(Boolean).at(-1)! } : undefined;
   }
   catch {
     return undefined;
@@ -40,10 +40,11 @@ const channelFrom = (value: string): string | undefined => {
 const blocked = 'The Twitch player could not load. A content blocker may be blocking it.';
 
 const createPlayer = () => {
-  // No proxyUrl: a live channel plays through Twitch's own embed.
+  // Live plays in this player: only Twitch's master playlist goes through this site's relay
+  // (workers/twitch-playlist), video loads straight from Twitch. Clips play their raw file.
   const instance = nmplayer('twitch-player')
     .addPlugin(DesktopUiPlugin)
-    .addPlugin(TwitchPlugin)
+    .addPlugin(TwitchPlugin, { proxyUrl: `${location.origin}/twitch-playlist` })
     .setup({ playlist: [] });
 
   instance.on('plugin:twitch:channel:offline' as never, (({ channel: name }: { channel: string }) => {
@@ -61,17 +62,19 @@ const createPlayer = () => {
 };
 
 const play = async () => {
-  const name = channelFrom(field.value);
-  if (!name) {
+  const source = sourceFrom(field.value);
+  if (!source) {
     message.value = 'Enter a channel name (4 to 25 letters, digits or underscores) or a twitch.tv link.';
     return;
   }
 
-  message.value = `Loading ${name}...`;
+  message.value = `Loading ${source.title}...`;
 
   if (!player) createPlayer();
 
-  player!.queue([{ id: name, title: name, url: `https://www.twitch.tv/${name}` }]);
+  // item() before the player is ready loses autoplay: setup pauses the element.
+  await player!.ready();
+  player!.queue([{ id: source.url, title: source.title, url: source.url }]);
   await player!.item(0, { autoplay: true });
 };
 
@@ -95,26 +98,28 @@ onUnmounted(() => {
 
 <template>
   <Layout :theme="theme" title="NoMercy Entertainment - Twitch Plugin" :options="options">
-    <!-- The layout box clips overflow: the player takes only the height the form and message leave. -->
+    <!-- The form lives in the sidebar, so the video keeps the whole 16:10 box on every screen. -->
+    <template #menu>
+      <form class="flex shrink-0 flex-col gap-2 w-full" @submit.prevent="play">
+        <input v-model="field"
+          id="twitch-channel"
+          type="text"
+          class="w-full min-w-0 px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700 text-white placeholder:text-neutral-500"
+          placeholder="Channel name or twitch.tv link"
+          aria-label="Twitch channel name, or a channel or clip link"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false" />
+        <button id="twitch-play"
+          type="submit"
+          class="w-full px-6 py-2 rounded-lg bg-white text-neutral-900 font-medium hover:bg-neutral-200 transition-colors">
+          Play channel or clip
+        </button>
+      </form>
+
+      <p id="twitch-message" role="status" class="shrink-0 my-2 min-h-6 text-sm text-neutral-300">{{ message }}</p>
+    </template>
+
     <div id="twitch-player" class="group nomercyplayer rounded-md !overflow-unset w-full flex-1 min-h-0"></div>
-
-    <form class="flex shrink-0 flex-col sm:flex-row gap-2 mt-2 sm:mt-4 w-full" @submit.prevent="play">
-      <input v-model="field"
-        id="twitch-channel"
-        type="text"
-        class="flex-1 min-w-0 px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700 text-white placeholder:text-neutral-500"
-        placeholder="Channel name or twitch.tv link"
-        aria-label="Twitch channel"
-        autocomplete="off"
-        autocapitalize="off"
-        spellcheck="false" />
-      <button id="twitch-play"
-        type="submit"
-        class="px-6 py-2 rounded-lg bg-white text-neutral-900 font-medium hover:bg-neutral-200 transition-colors">
-        Play
-      </button>
-    </form>
-
-    <p id="twitch-message" role="status" class="shrink-0 mt-2 min-h-6 text-sm text-neutral-300">{{ message }}</p>
   </Layout>
 </template>

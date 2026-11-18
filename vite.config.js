@@ -4,6 +4,8 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+import { twitchPlaylistRelay } from './workers/twitch-playlist/vite-plugin.mjs'
+
 // Stub out @jofr/capacitor-media-session — only used on native, not web.
 // Must be enforce: 'pre' so it runs before Rollup's own resolution, which
 // otherwise errors on the missing named export before our plugin can intercept.
@@ -26,6 +28,7 @@ export default defineConfig({
     stubCapacitorMediaSession(),
     vue(),
     vueDevTools(),
+    twitchPlaylistRelay(),
   ],
   resolve: {
     alias: {

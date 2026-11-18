@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { buildMediaList } from './media-list.mjs';
+import { clipSlug, liveChannel } from './twitch-picks.mjs';
 
 // E2E_PAGES lists page names without a leading slash (videoplayer,musicplayer), so MSYS does not turn them into Windows paths.
 // E2E_PLANT turns the first video url into a 404 to prove the check can fail.
@@ -76,29 +77,46 @@ for (const item of list) {
 }
 
 test.describe('twitch page', () => {
-	test('a typed channel loads the Twitch embed for that channel', async ({ page, browserName }) => {
-		if (pages && !pages.includes('/twitch')) test.skip();
-		const row = { file: '/twitch', page: '/twitch', browser: browserName, pass: false, currentTime: 0, error: null };
+	// Live plays in this player through the same-site playlist relay; a clip plays its raw file. No Twitch iframe.
+	const playsRaw = async (page, browserName, input, kind) => {
+		const row = { file: `/twitch ${kind}=${input}`, page: '/twitch', browser: browserName, pass: false, currentTime: 0, error: null };
 		test.info().annotations.push({ type: 'result', description: '' });
-		const channel = 'twitch';
+		const relayed = [];
+		page.on('response', (r) => { if (r.url().includes('/twitch-playlist/')) relayed.push(r.status()); });
 		try {
 			await page.goto('/twitch');
-			await page.fill('#twitch-channel', channel);
+			await page.fill('#twitch-channel', input);
 			await page.click('#twitch-play');
-			const src = await page.waitForFunction(() => document.querySelector('iframe[src*="player.twitch.tv"]')?.src ?? null, null, { timeout: 30_000 }).then(h => h.jsonValue());
-			const url = new URL(src);
-			const loaded = url.searchParams.get('channel') === channel && url.searchParams.get('parent') === '127.0.0.1';
-			const offline = await page.locator('#twitch-message').innerText();
-			row.pass = loaded;
-			row.error = loaded ? null : `iframe src ${src}`;
-			row.currentTime = 0;
-			row.file = `/twitch channel=${channel} ${offline ? `message="${offline}"` : ''}`.trim();
+			// A live stream starts at its live position, so playback is proven by time advancing, not by its value.
+			await page.waitForFunction(() => { const v = document.querySelector('video'); return v && !v.paused && v.readyState >= 3; }, null, { timeout: 45_000 });
+			const start = await page.evaluate(() => document.querySelector('video').currentTime);
+			await page.waitForFunction(from => document.querySelector('video').currentTime - from >= 2, start, { timeout: 20_000 });
+			row.currentTime = await page.evaluate(() => document.querySelector('video').currentTime);
+			const iframes = await page.locator('iframe[src*="player.twitch.tv"]').count();
+			const relayOk = kind === 'clip' || relayed.includes(200);
+			row.pass = iframes === 0 && relayOk;
+			row.error = row.pass ? null : `iframes=${iframes} relay statuses=${relayed.join(',') || 'none'}`;
 		}
 		catch (error) {
-			row.error = String(error.message).split('\n')[0];
+			const message = await page.locator('#twitch-message').innerText().catch(() => '');
+			row.error = `${String(error.message).split('\n')[0]} relay=${relayed.join(',') || 'none'} message="${message}"`;
 		}
 		test.info().annotations.find(a => a.type === 'result').description = JSON.stringify(row);
 		expect(row.pass, row.error ?? '').toBe(true);
+	};
+
+	test('a live channel plays in this player through the playlist relay', async ({ page, browserName }) => {
+		if (pages && !pages.includes('/twitch')) test.skip();
+		const channel = await liveChannel();
+		expect(channel, 'Twitch lists no live channel').toBeTruthy();
+		await playsRaw(page, browserName, channel, 'channel');
+	});
+
+	test('a clip link plays its raw file in this player', async ({ page, browserName }) => {
+		if (pages && !pages.includes('/twitch')) test.skip();
+		const slug = await clipSlug();
+		expect(slug, 'Twitch returned no clip').toBeTruthy();
+		await playsRaw(page, browserName, `https://clips.twitch.tv/${slug}`, 'clip');
 	});
 
 	test('an invalid channel shows a message and loads no embed', async ({ page }) => {
@@ -115,11 +133,13 @@ test.describe('twitch page', () => {
 			if (pages && !pages.includes('/twitch')) test.skip();
 			await page.setViewportSize(viewport);
 			await page.goto('/twitch');
-			const box = await page.locator('#twitch-player').evaluate(el => el.parentElement.getBoundingClientRect().bottom);
 			for (const id of ['#twitch-channel', '#twitch-play', '#twitch-message']) {
-				const bottom = await page.locator(id).evaluate(el => el.getBoundingClientRect().bottom);
-				expect(bottom, `${id} bottom ${bottom} vs box ${box}`).toBeLessThanOrEqual(box);
+				const [bottom, panel] = await page.locator(id).evaluate(el => [el.getBoundingClientRect().bottom, el.closest('aside, main').getBoundingClientRect().bottom]);
+				expect(bottom, `${id} bottom ${bottom} vs its panel ${panel}`).toBeLessThanOrEqual(panel);
 			}
+			// The video gets most of its 16:10 box, not the strip left over by a form.
+			const [player, box] = await page.locator('#twitch-player').evaluate(el => [el.getBoundingClientRect().height, el.parentElement.getBoundingClientRect().height]);
+			expect(player, `player ${player} px in a ${box} px box`).toBeGreaterThanOrEqual(box * 0.8);
 		});
 	}
 });
