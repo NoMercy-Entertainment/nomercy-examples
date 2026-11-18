@@ -52,13 +52,19 @@ for (const item of list) {
 					if (now() > 0 && start === null) start = now();
 					if (start !== null && now() - start >= min) break;
 				}
-				return { currentTime: now(), advanced: start === null ? 0 : now() - start, mediaError };
+				const box = isMusic ? null : media().getBoundingClientRect();
+				return { currentTime: now(), advanced: start === null ? 0 : now() - start, mediaError, box: box && { width: box.width, height: box.height } };
 			}, { index: item.index, window: 25_000, min: MIN_ADVANCE, isMusic: music, track: item });
 
 			row.currentTime = result.currentTime;
 			row.error = result.mediaError;
 			row.pass = !result.mediaError && result.advanced >= MIN_ADVANCE;
 			if (!row.pass && !row.error) row.error = `currentTime advanced ${result.advanced.toFixed(2)} s`;
+			// A video that plays in a collapsed box is invisible to the viewer (2026-11-18: 878x0 on /videoplayer).
+			if (result.box && (result.box.width < 100 || result.box.height < 100)) {
+				row.pass = false;
+				row.error ??= `video box ${Math.round(result.box.width)}x${Math.round(result.box.height)} is too small to see`;
+			}
 		}
 		catch (error) {
 			row.error = String(error.message).split('\n')[0];
