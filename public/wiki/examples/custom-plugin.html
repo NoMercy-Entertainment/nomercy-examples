@@ -79,67 +79,59 @@
 		<div class="event-stream" id="stream"></div>
 	</main>
 
-	<script src="https://cdn.jsdelivr.net/npm/@nomercy-entertainment/nomercy-video-player@1.0.0-beta.28/dist/nomercy-video-player.iife.js"></script>
+	<script type="module" src="player.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
 	<script src="event-stream.js"></script>
-	<script>
+	<script type="module">
 		// ─── CinemaOverlayPlugin ────────────────────────────
 
-		class CinemaOverlayPlugin extends nmplayer.Plugin {
-			constructor() {
-				super();
-				this.bar = null;
-				this._timeHandler = null;
-				this._keyHandler = null;
-				this._visible = true;
-				this._position = 0;
-				this._positions = [
-					'top:12px;left:12px', 'top:12px;right:12px',
-					'bottom:12px;right:12px', 'bottom:12px;left:12px',
-				];
-			}
+		class CinemaOverlayPlugin extends nmPlugins.Plugin {
+			static id = 'demo:cinema-overlay';
+			static version = '1.0.0';
+			static description = 'Floating info bar with keyboard shortcuts and position cycling';
+
+			bar = null;
+			visible = true;
+			position = 0;
+			positions = [
+				'top:12px;left:12px', 'top:12px;right:12px',
+				'bottom:12px;right:12px', 'bottom:12px;left:12px',
+			];
 
 			use() {
-				var self = this;
-				var container = this.player.element();
-				container.style.position = 'relative';
-
-				this.bar = document.createElement('div');
-				this.bar.style.cssText = 'position:absolute;' + this._positions[0] +
+				// mount() claims a div on the player container and removes it on dispose
+				this.bar = this.mount('bar');
+				this.bar.style.cssText = 'position:absolute;' + this.positions[0] +
 					';background:rgba(0,0,0,0.75);color:#e4e4e7;padding:8px 14px;' +
 					'border-radius:8px;font-size:13px;font-family:monospace;' +
 					'pointer-events:none;z-index:10;backdrop-filter:blur(8px);' +
 					'border:1px solid rgba(255,255,255,0.1);';
 				this.bar.textContent = '\u23F8 Ready';
-				container.appendChild(this.bar);
 
-				this._timeHandler = function (data) {
-					if (!self.bar || !self._visible) return;
-					var icon = self.player.state() === 'playing' ? '\u25B6' : '\u23F8';
-					self.bar.textContent = icon + ' ' + data.currentTimeHuman + ' / ' + data.durationHuman;
-				};
-				this.player.on('time', this._timeHandler);
+				// on() and listen() are cleaned up automatically on dispose
+				this.on('time', (data) => {
+					if (!this.visible) return;
+					const icon = this.player.playState() === 'playing' ? '\u25B6' : '\u23F8';
+					this.bar.textContent = icon + ' ' + this.format(data.time) + ' / ' + this.format(data.duration);
+				});
 
-				this._keyHandler = function (e) {
+				this.listen(document, 'keydown', (e) => {
 					if (e.key === 'i' || e.key === 'I') {
-						self._visible = !self._visible;
-						self.bar.style.display = self._visible ? '' : 'none';
+						this.visible = !this.visible;
+						this.bar.style.display = this.visible ? '' : 'none';
 					}
 					if (e.key === 't' || e.key === 'T') {
-						self._position = (self._position + 1) % 4;
-						self.bar.style.cssText = self.bar.style.cssText
+						this.position = (this.position + 1) % 4;
+						this.bar.style.cssText = this.bar.style.cssText
 							.replace(/top:[^;]+;|bottom:[^;]+;|left:[^;]+;|right:[^;]+;/g, '')
-							+ ';' + self._positions[self._position];
+							+ ';' + this.positions[this.position];
 					}
-				};
-				document.addEventListener('keydown', this._keyHandler);
+				});
 			}
 
-			dispose() {
-				if (this.bar && this.bar.parentNode) this.bar.parentNode.removeChild(this.bar);
-				this.bar = null;
-				if (this._timeHandler) this.player.off('time', this._timeHandler);
-				if (this._keyHandler) document.removeEventListener('keydown', this._keyHandler);
+			format(seconds) {
+				const s = Math.max(0, Math.floor(seconds || 0));
+				return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 			}
 		}
 
@@ -169,8 +161,8 @@
 		}
 
 		var config = {
-			basePath: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films/Sintel.(2010)',
-			imageBasePath: 'https://image.tmdb.org/t/p/w780',
+			baseUrl: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films/Sintel.(2010)',
+			baseImageUrl: 'https://image.tmdb.org/t/p/w780',
 			playlist: [{
 				id: 'sintel',
 				title: 'Sintel',
@@ -181,33 +173,34 @@
 			}],
 		};
 
-		var player = nmplayer('player').setup(config);
-
-		var cinemaPlugin = new CinemaOverlayPlugin();
-		player.registerPlugin('cinema', cinemaPlugin);
-		player.usePlugin('cinema');
+		window.player = nmplayer('player')
+			.addPlugin(nmPlugins.DesktopUiPlugin)
+			.addPlugin(CinemaOverlayPlugin)
+			.setup(config);
 		var pluginOn = true;
 
 		function togglePlugin() {
 			var btn = document.getElementById('btnToggle');
 			if (pluginOn) {
-				cinemaPlugin.dispose();
+				player.removePlugin(CinemaOverlayPlugin);
 				pluginOn = false;
 				btn.textContent = 'Plugin: Off';
 				btn.classList.remove('active');
 			} else {
-				cinemaPlugin.use();
+				player.addPlugin(CinemaOverlayPlugin);
 				pluginOn = true;
 				btn.textContent = 'Plugin: On';
 				btn.classList.add('active');
 			}
 		}
 
-		var es = createEventStream(player, {
+		Object.assign(window, { togglePlugin, copySource });
+
+		window.es = createEventStream(player, {
 			categories: {
-				playback:  { color: '#4ade80', events: ['play', 'pause', 'seek', 'complete', 'firstFrame'] },
+				playback:  { color: '#4ade80', events: ['play', 'pause', 'seek', 'ended', 'firstFrame'] },
 				time:      { color: '#facc15', events: ['time'] },
-				lifecycle: { color: '#a1a1aa', events: ['ready', 'beforePlay', 'idle'] },
+				lifecycle: { color: '#a1a1aa', events: ['ready', 'beforePlay', 'phase'] },
 			},
 		});
 	</script>
