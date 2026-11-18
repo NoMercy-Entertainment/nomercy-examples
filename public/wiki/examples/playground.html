@@ -86,12 +86,12 @@
 		<div class="state-grid" id="state-grid"></div>
 	</main>
 
-	<script src="https://cdn.jsdelivr.net/npm/@nomercy-entertainment/nomercy-video-player@1.0.0-beta.28/dist/nomercy-video-player.iife.js"></script>
-	<script>
+	<script type="module" src="player.js"></script>
+	<script type="module">
 		// Player setup
 		var config = {
-			basePath: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films',
-			imageBasePath: 'https://image.tmdb.org/t/p/w780',
+			baseUrl: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Films',
+			baseImageUrl: 'https://image.tmdb.org/t/p/w780',
 			playlist: [
 				{
 					id: 'sintel',
@@ -120,7 +120,9 @@
 			],
 		};
 
-		var player = nmplayer('player').setup(config);
+		window.player = nmplayer('player')
+			.addPlugin(nmPlugins.DesktopUiPlugin)
+			.setup(config);
 
 		// Method definitions by category
 		var methodTabs = {
@@ -128,33 +130,33 @@
 				{ name: 'play', args: false },
 				{ name: 'pause', args: false },
 				{ name: 'stop', args: false },
-				{ name: 'state', args: false },
-				{ name: 'seek', args: true, placeholder: 'seconds (e.g. 30)' },
-				{ name: 'currentTime', args: false },
+				{ name: 'playState', args: false },
+				{ name: 'time', args: true, placeholder: 'seconds to seek (empty = read)' },
 				{ name: 'duration', args: false },
 			],
 			Volume: [
 				{ name: 'volume', args: true, placeholder: '0–100' },
-				{ name: 'muted', args: true, placeholder: 'true / false' },
+				{ name: 'toggleMute', args: false },
+				{ name: 'volumeState', args: false },
 			],
 			Display: [
-				{ name: 'aspect', args: true, placeholder: 'uniform, fill, 16:9...' },
+				{ name: 'aspectRatio', args: true, placeholder: 'uniform, fill, 16:9...' },
 				{ name: 'cycleAspectRatio', args: false },
 				{ name: 'fullscreen', args: true, placeholder: 'true / false' },
 			],
 			Playlist: [
 				{ name: 'next', args: false },
 				{ name: 'previous', args: false },
-				{ name: 'playlistItem', args: true, placeholder: 'index (0, 1, ...)' },
-				{ name: 'playlistIndex', args: false },
-				{ name: 'playlist', args: false },
+				{ name: 'item', args: true, placeholder: 'index (empty = current)' },
+				{ name: 'index', args: false },
+				{ name: 'queue', args: false },
 			],
 			Tracks: [
 				{ name: 'audioTrack', args: true, placeholder: 'index' },
 				{ name: 'audioTracks', args: false },
-				{ name: 'subtitle', args: true, placeholder: 'index (-1 = off)' },
+				{ name: 'subtitle', args: true, placeholder: 'index (null = off)' },
 				{ name: 'subtitles', args: false },
-				{ name: 'quality', args: true, placeholder: 'index (-1 = auto)' },
+				{ name: 'quality', args: true, placeholder: 'index or auto' },
 				{ name: 'qualityLevels', args: false },
 			],
 		};
@@ -248,6 +250,7 @@
 					var arg = input.value.trim();
 					if (arg === 'true') arg = true;
 					else if (arg === 'false') arg = false;
+					else if (arg === 'null') arg = null;
 					else if (!isNaN(arg) && arg !== '') arg = Number(arg);
 					val = player[name](arg);
 				} else {
@@ -275,13 +278,13 @@
 
 		// Live state panel
 		var stateFields = [
-			{ label: 'State', fn: function () { return player.state(); } },
-			{ label: 'Time', fn: function () { var t = player.currentTime(); return t != null ? t.toFixed(1) + 's' : '—'; } },
+			{ label: 'State', fn: function () { return player.playState(); } },
+			{ label: 'Time', fn: function () { var t = player.time(); return t != null ? t.toFixed(1) + 's' : '—'; } },
 			{ label: 'Duration', fn: function () { var d = player.duration(); return d != null ? d.toFixed(1) + 's' : '—'; } },
 			{ label: 'Volume', fn: function () { return player.volume(); } },
-			{ label: 'Muted', fn: function () { return player.muted(); } },
-			{ label: 'Aspect', fn: function () { return player.aspect(); } },
-			{ label: 'Playlist #', fn: function () { return player.playlistIndex(); } },
+			{ label: 'Muted', fn: function () { return player.volumeState() === 'muted'; } },
+			{ label: 'Aspect', fn: function () { return player.aspectRatio(); } },
+			{ label: 'Playlist #', fn: function () { return player.index(); } },
 			{ label: 'Fullscreen', fn: function () { return player.fullscreen(); } },
 		];
 
