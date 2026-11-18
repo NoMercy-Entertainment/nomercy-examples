@@ -6,7 +6,7 @@ import MusicButton from './MusicButton.vue';
 
 const handleClick = (e?: MouseEvent) => {
 	e?.stopPropagation();
-	musicPlayer.shuffle(!isShuffling.value);
+	musicPlayer.shuffleState(!isShuffling.value);
 };
 
 </script>

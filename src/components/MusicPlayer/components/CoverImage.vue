@@ -3,7 +3,7 @@ import {type PropType} from 'vue';
 
 import logo from '@/assets/logo.svg';
 
-import {PlaylistItem} from "@/components/MusicPlayer/musicPlayerStore";
+import type {PlaylistItem} from "@/components/MusicPlayer/playlists";
 
 defineProps({
   data: {

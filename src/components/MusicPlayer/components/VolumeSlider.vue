@@ -5,12 +5,14 @@ import musicPlayer from '../musicPlayerStore';
 
 import SliderBar from '@/components/MusicPlayer/components/SliderBar.vue';
 
-const volumePercentage = ref<number>(musicPlayer.volume ?? 0);
+const CURVE = 1.5;
 
-function calculateLogVolume(sliderValue: number, p = 1.5) {
+function calculateLogVolume(sliderValue: number, p = CURVE) {
   const normalizedValue = sliderValue / 100;
   return Math.pow(normalizedValue, p) * 100;
 }
+
+const volumePercentage = ref<number>(Math.pow(musicPlayer.volume() / 100, 1 / CURVE) * 100);
 
 watch(volumePercentage, (value) => {
   const volume = calculateLogVolume(value);

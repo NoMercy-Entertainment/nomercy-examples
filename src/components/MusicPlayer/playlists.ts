@@ -1,11 +1,22 @@
 import { useLocalStorage } from '@vueuse/core';
-import { BasePlaylistItem } from '@nomercy-entertainment/nomercy-music-player';
+import type { MusicPlaylistItem } from '@nomercy-entertainment/nomercy-music-player';
+
+interface TrackLink {
+    name: string,
+    url: string,
+}
+
+export interface PlaylistItem extends MusicPlaylistItem {
+    path?: string,
+    album_track?: TrackLink[],
+    artist_track?: TrackLink[],
+}
 
 export interface Playlist {
     name: string,
     cover: string,
     artist: string,
-    tracks: BasePlaylistItem[],
+    tracks: PlaylistItem[],
 }
 
 export const playlists = useLocalStorage<Playlist[]>('playlists', [

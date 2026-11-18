@@ -1,16 +1,16 @@
 ﻿<script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 import type { Option } from "@/types/types";
 import Layout from "@/Views/Layout.vue";
 
 import MusicPlayer from "@/components/MusicPlayer/MusicPlayer.vue";
 
-import playlists from '@/components/MusicPlayer/playlists';
+import playlists, { type PlaylistItem } from '@/components/MusicPlayer/playlists';
 import { fetchPlaylist } from '@/lib/fetchPlaylist';
 import { useLocalStorage } from '@vueuse/core';
-import { currentSong, equalizerMenuOpen, queueMenuOpen } from '@/components/MusicPlayer/musicPlayerStore';
-import { BasePlaylistItem } from '@nomercy-entertainment/nomercy-music-player';
+import { currentSong, equalizerMenuOpen, loadPlaylist, musicPlayer, playTrack, queueMenuOpen } from '@/components/MusicPlayer/musicPlayerStore';
+import { CanvasPlugin, SpectrumPlugin } from '@nomercy-entertainment/nomercy-music-player/plugins';
 
 defineProps({
   theme: {
@@ -20,9 +20,9 @@ defineProps({
 });
 
 const musicPlayerRef = ref<{ player: any }>();
-const canvas = ref<HTMLCanvasElement>();
+const visualizer = ref<HTMLDivElement>();
 const audioColor = ref<HTMLDivElement>();
-const currentPlaylist = ref<BasePlaylistItem[]>([]);
+const currentPlaylist = ref<PlaylistItem[]>([]);
 
 const useTheme = useLocalStorage('useTheme', true);
 
@@ -74,25 +74,52 @@ const options = ref<Option[]>([
         level: 1,
         action: () => {
           currentPlaylist.value = playlist.tracks;
-          musicPlayerRef.value!.player!._backLog = [];
-          musicPlayerRef.value!.player!.setBaseUrl('');
-          musicPlayerRef.value!.player!.playTrack(playlist.tracks[0], playlist.tracks);
-          musicPlayerRef.value!.player!.pause();
+          loadPlaylist(playlist.tracks);
         },
       })),
     ]
   },
 ]);
 
-onMounted(() => {
-  if (!musicPlayerRef.value) return;
+const BARS = 64;
 
-  musicPlayerRef.value.player?.setBaseUrl('');
+const drawBars = (ctx: CanvasRenderingContext2D, frequency: Uint8Array) => {
+  const { width, height } = ctx.canvas;
+  const stops = colorStops.value;
+  const fill = ctx.createLinearGradient(0, 0, width, 0);
+  stops.forEach((color, index) => fill.addColorStop(stops.length > 1 ? index / (stops.length - 1) : 0, color));
+  ctx.fillStyle = fill;
+
+  const step = Math.floor((frequency.length * 0.75) / BARS);
+  const slot = width / BARS;
+  for (let bar = 0; bar < BARS; bar++) {
+    const value = frequency[bar * step] / 255;
+    ctx.fillRect(bar * slot, height - value * height, slot * 0.8, value * height);
+  }
+};
+
+let stopRendering: (() => void) | undefined;
+
+onMounted(async () => {
   const playlist = playlists.value.find(p => p.name == 'Wake Up')!;
   currentPlaylist.value = playlist.tracks;
-  musicPlayerRef.value.player?.playTrack(playlist.tracks[0], playlist.tracks);
-  musicPlayerRef.value.player?.pause();
+  loadPlaylist(playlist.tracks);
 
+  musicPlayer.addPlugin(CanvasPlugin, { mount: visualizer.value });
+  await musicPlayer.ready();
+  const canvas = musicPlayer.getPlugin(CanvasPlugin);
+  const spectrum = musicPlayer.getPlugin(SpectrumPlugin);
+  if (!canvas || !spectrum) return;
+
+  stopRendering = canvas.addRenderer((ctx) => {
+    if (musicPlayer.playState() !== 'playing') return;
+    drawBars(ctx, spectrum.currentFrame().frequency);
+  });
+});
+
+onBeforeUnmount(() => {
+  stopRendering?.();
+  musicPlayer.removePlugin(CanvasPlugin);
 });
 
 const handleChange = async (event: Event) => {
@@ -116,10 +143,7 @@ const handleChange = async (event: Event) => {
           level: 1,
           action: () => {
             currentPlaylist.value = playlist.tracks;
-            musicPlayerRef.value!.player!._backLog = [];
-            musicPlayerRef.value!.player!.setBaseUrl('');
-            musicPlayerRef.value!.player!.playTrack(playlist.tracks[0], playlist.tracks);
-            musicPlayerRef.value!.player!.pause();
+            loadPlaylist(playlist.tracks);
           },
         }
       ]
@@ -127,71 +151,11 @@ const handleChange = async (event: Event) => {
   ];
 
   currentPlaylist.value = playlist.tracks;
-  musicPlayerRef.value!.player!._backLog = [];
-  musicPlayerRef.value!.player!.setBaseUrl('');
-  musicPlayerRef.value!.player!.playTrack(playlist.tracks[0], playlist.tracks);
-  musicPlayerRef.value!.player!.pause();
+  loadPlaylist(playlist.tracks);
 };
 
-watch(canvas, (value) => {
-  if (!value) return;
-  const context = value.getContext('2d', {
-    willReadFrequently: true,
-    desynchronized: true,
-  });
-
-  const draw = () => {
-    if (!musicPlayerRef.value?.player) return;
-
-    const sourceCanvas = musicPlayerRef.value.player._audioElement1?.motion?.canvas;
-    if (sourceCanvas && audioColor.value) {
-
-      if (musicPlayerRef.value.player._audioElement1.isPlaying()) {
-        if (useTheme) {
-          musicPlayerRef.value.player._audioElement1?.motion!.registerGradient('theme', {
-            bgColor: 'transparent',
-            dir: 'h',
-            colorStops: colorStops.value
-          });
-
-          musicPlayerRef.value.player._audioElement1!.motion!.gradient = 'theme';
-        }
-
-        value.width = sourceCanvas.width;
-        value.height = sourceCanvas.height;
-        context!.clearRect(0, 0, value.width, value.height);
-        context!.drawImage(sourceCanvas, 0, 0, value.width, value.height);
-      } else if (musicPlayerRef.value.player._audioElement2.isPlaying()) {
-        if (useTheme) {
-          musicPlayerRef.value.player._audioElement2?.motion!.registerGradient('theme', {
-            bgColor: 'transparent',
-            dir: 'h',
-            colorStops: colorStops.value
-          });
-
-          musicPlayerRef.value.player._audioElement2!.motion!.gradient = 'theme';
-        }
-
-        value.width = sourceCanvas.width;
-        value.height = sourceCanvas.height;
-        context!.clearRect(0, 0, value.width, value.height);
-        context!.drawImage(sourceCanvas, 0, 0, value.width, value.height);
-      }
-    }
-    requestAnimationFrame(draw);
-  };
-
-  draw();
-});
-
-watch(musicPlayerRef, (value) => {
-  if (!value) return;
-  console.log(value?.player);
-});
-
-const handleClick = (song: BasePlaylistItem) => {
-  if (!musicPlayerRef.value) return;
-  musicPlayerRef.value!.player!.playTrack(song, currentPlaylist);
+const handleClick = (song: PlaylistItem) => {
+  playTrack(song);
 };
 
 </script>
@@ -203,9 +167,9 @@ const handleClick = (song: BasePlaylistItem) => {
       class="absolute top-0 left-0 overflow-clip bg-[var(--color-theme-2-shadow)] h-0 w-0"></div>
 
     <div class="flex gap-2 items-center justify-center h-10 flex-1 w-auto bg-black relative overflow-clip">
-      <canvas ref="canvas" id="visualizer" class="flex w-px flex-1 h-full" :class="{
+      <div ref="visualizer" id="visualizer" class="flex w-px flex-1 h-full" :class="{
         'opacity-0': !equalizerMenuOpen,
-      }" />
+      }"></div>
 
       <div class="flex flex-col w-2/5 h-available overflow-auto py-2 gap-2 pr-4 transition-all duration-300" :class="{
         '-translate-x-0': queueMenuOpen,

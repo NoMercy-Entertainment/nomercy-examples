@@ -3,6 +3,7 @@ import {onMounted} from 'vue';
 
 import MusicButton from './MusicButton.vue';
 import {useCycleList} from '@vueuse/core';
+import type {RepeatState} from '@nomercy-entertainment/nomercy-music-player';
 import musicPlayer from '../musicPlayerStore';
 
 const states = [
@@ -18,15 +19,14 @@ const {state, next, go} = useCycleList<'off' | 'one' | 'all'>([
 ]);
 
 onMounted(() => {
-  if (!musicPlayer._repeat) return;
-  go(states.indexOf(musicPlayer._repeat));
+  go(states.indexOf(musicPlayer.repeatState()));
 
 });
 
 const handleClick = (e?: MouseEvent) => {
   e?.stopPropagation();
   next();
-  musicPlayer.repeat(state.value);
+  musicPlayer.repeatState(state.value as RepeatState);
 };
 </script>
 

@@ -1,5 +1,4 @@
-import playlists, { Playlist } from "@/components/MusicPlayer/playlists";
-import { BasePlaylistItem } from "@nomercy-entertainment/nomercy-music-player";
+import playlists, { type Playlist, type PlaylistItem } from "@/components/MusicPlayer/playlists";
 
 export const fetchPlaylist = async (url: string) => {
   const response = await fetch("https://api.nomercy.tv/cors?url=" + url);
@@ -56,7 +55,7 @@ export const fetchPlaylist = async (url: string) => {
       ? JSON.parse(track.dataset.trackInfo)
       : {};
 
-    const item: BasePlaylistItem = {
+    const item: PlaylistItem = {
       id: data.id,
       cover: cover,
       album_track: [
