@@ -168,6 +168,20 @@ test.describe('twitch page', () => {
 	}
 });
 
+test('the menu and the player sit centered on a wide screen', async ({ page }) => {
+	if (pages && !pages.includes('/videoplayer')) test.skip();
+	await page.setViewportSize({ width: 3440, height: 1332 });
+	await page.goto('/videoplayer');
+	const menu = await page.locator('#menu').boundingBox();
+	const main = await page.locator('#wrapper').boundingBox();
+	const left = menu.x;
+	const right = 3440 - (main.x + main.width);
+	const between = main.x - (menu.x + menu.width);
+	// They sit together as one centered group: the gap between them is the layout gap (4rem), not the leftover width.
+	expect(between, `space between ${between} px`).toBeLessThanOrEqual(66);
+	expect(Math.abs(left - right), `space left ${left} px, right ${right} px`).toBeLessThanOrEqual(2);
+});
+
 test.describe('music page controls', () => {
 	test('play, next, shuffle and the visualizer canvas work through the page buttons', async ({ page, browserName }) => {
 		if (pages && !pages.includes('/musicplayer')) test.skip();
