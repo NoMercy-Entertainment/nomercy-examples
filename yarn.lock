@@ -1339,13 +1339,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomercy-entertainment/nomercy-video-player@npm:^2.9.2":
-  version: 2.9.2
-  resolution: "@nomercy-entertainment/nomercy-video-player@npm:2.9.2"
+"@nomercy-entertainment/nomercy-video-player@npm:^2.9.3":
+  version: 2.9.3
+  resolution: "@nomercy-entertainment/nomercy-video-player@npm:2.9.3"
   dependencies:
     "@nomercy-entertainment/nomercy-player-core": "npm:2.9.2"
     "@nomercy-entertainment/nomercy-subtitle-octopus": "npm:^0.2.0"
-  checksum: 10c0/f29dab47ade0d0d6497db6f593a75e916d7d6b750146e923ce224250231f12586f550f37bcc996f1a2f9794a7893745aba86fde5d54cd49e8107465fd2c5cb54
+  checksum: 10c0/bf3b89941b2946e465048ffaab482c0b1780ce6bafe17db98b92f51601432f220a0013ab779ddd8c3c6329a377cdb956f296d0f220876e532df176a7b1f78f9a
   languageName: node
   linkType: hard
 
@@ -4045,7 +4045,7 @@ __metadata:
   resolution: "nomercy-examples@workspace:."
   dependencies:
     "@nomercy-entertainment/nomercy-music-player": "npm:^2.9.1"
-    "@nomercy-entertainment/nomercy-video-player": "npm:^2.9.2"
+    "@nomercy-entertainment/nomercy-video-player": "npm:^2.9.3"
     "@playwright/test": "npm:^1.60"
     "@tailwindcss/line-clamp": "npm:^0.4.4"
     "@types/node": "npm:^22.10.5"
