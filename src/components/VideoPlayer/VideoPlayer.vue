@@ -1,45 +1,59 @@
 ﻿<script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 
-import nmplayer, { type NMPlayer, OctopusPlugin } from "@nomercy-entertainment/nomercy-video-player";
+import nmplayer, { type NMVideoPlayer } from "@nomercy-entertainment/nomercy-video-player";
+import {
+  DesktopUiPlugin,
+  OctopusPlugin,
+  SubtitleOverlayPlugin,
+} from "@nomercy-entertainment/nomercy-video-player/plugins";
 
 declare global {
   interface Window {
-    player: NMPlayer;
+    player: NMVideoPlayer;
     nmplayer: typeof nmplayer;
   }
 }
 
-import config from "./config";
+import config, { desktopUiOptions } from "./config";
 
 const props = defineProps({
   language: {
     type: String,
     default: 'en',
   },
+  withUi: {
+    type: Boolean,
+    default: true,
+  },
 });
 
-const player = ref<NMPlayer>();
+const player = ref<NMVideoPlayer>();
 
 onMounted(() => {
-    player.value = nmplayer('player1')
-        .setup({ ...config, language: props.language }) as unknown as NMPlayer;
+  const instance = nmplayer('player1');
 
-  // The local copy of the subtitle worker; the plugin's CDN default resolves to an old build.
-  const octopusPlugin = new OctopusPlugin({
-    workerUrl: '/js/octopus/subtitles-octopus-worker.js',
-    legacyWorkerUrl: '/js/octopus/subtitles-octopus-worker-legacy.js',
-    fallbackFont: '/js/octopus/default.ttf',
-  });
-  player.value?.registerPlugin('octopus', octopusPlugin);
-  player.value?.usePlugin('octopus');
+  if (props.withUi) {
+    instance.addPlugin(DesktopUiPlugin, desktopUiOptions);
+  }
 
-  window.player = player.value!;
+  instance
+    .addPlugin(SubtitleOverlayPlugin)
+    // The local copy of the subtitle worker; the plugin's default points at the fork's own build.
+    .addPlugin(OctopusPlugin, {
+      workerUrl: '/js/octopus/subtitles-octopus-worker.js',
+      legacyWorkerUrl: '/js/octopus/subtitles-octopus-worker-legacy.js',
+      fallbackFont: '/js/octopus/default.ttf',
+    })
+    .setup({ ...config, language: props.language });
+
+  player.value = instance;
+  window.player = instance;
   window.nmplayer = nmplayer;
 });
 
 onUnmounted(() => {
-  player.value?.dispose();
+  void player.value?.dispose();
 });
 
 defineExpose({

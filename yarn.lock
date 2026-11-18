@@ -387,15 +387,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/core@npm:^6.1.2":
-  version: 6.2.1
-  resolution: "@capacitor/core@npm:6.2.1"
-  dependencies:
-    tslib: "npm:^2.1.0"
-  checksum: 10c0/09562ab35724eda31f9675fba11905b60d8bc31831e1d4b8f08476c043ca5bf4e5f674ec5ba63a5544e759c2269cb23b6bfe246ad6e998ecceef3f0e8d0129bb
-  languageName: node
-  linkType: hard
-
 "@csstools/cascade-layer-name-parser@npm:^1.0.13":
   version: 1.0.13
   resolution: "@csstools/cascade-layer-name-parser@npm:1.0.13"
@@ -1234,28 +1225,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ionic/core@npm:8.8.7":
-  version: 8.8.7
-  resolution: "@ionic/core@npm:8.8.7"
-  dependencies:
-    "@stencil/core": "npm:4.43.0"
-    ionicons: "npm:^8.0.13"
-    tslib: "npm:^2.1.0"
-  checksum: 10c0/46d442018b1c70ec6182e3b449dddc77c192df1f4da87078ab20f4740ce7eca852929d4987004a60bf5416fadb232a9cf5e492160179092c80b0fb7a252d62bf
-  languageName: node
-  linkType: hard
-
-"@ionic/vue@npm:^8.4.1":
-  version: 8.8.7
-  resolution: "@ionic/vue@npm:8.8.7"
-  dependencies:
-    "@ionic/core": "npm:8.8.7"
-    "@stencil/vue-output-target": "npm:0.10.7"
-    ionicons: "npm:^8.0.13"
-  checksum: 10c0/34e8313092593af7313be15f177f0670977a64444b5feeaea9d1f9d30a63fa75e4592ae69010684d2c90d590bca0e0ef3e3e4b0d9e364a46b6f7b5c46f125bbe
-  languageName: node
-  linkType: hard
-
 "@isaacs/fs-minipass@npm:^4.0.0":
   version: 4.0.1
   resolution: "@isaacs/fs-minipass@npm:4.0.1"
@@ -1271,15 +1240,6 @@ __metadata:
   dependencies:
     "@sinclair/typebox": "npm:^0.27.8"
   checksum: 10c0/b329e89cd5f20b9278ae1233df74016ebf7b385e0d14b9f4c1ad18d096c4c19d1e687aa113a9c976b16ec07f021ae53dea811fb8c1248a50ac34fbe009fdf6be
-  languageName: node
-  linkType: hard
-
-"@jofr/capacitor-media-session@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "@jofr/capacitor-media-session@npm:4.0.0"
-  peerDependencies:
-    "@capacitor/core": ^6.0.0
-  checksum: 10c0/90d85e9010f4a050a9a1f29e09c4ceddb149ecaef17a37915fd15b5601f1e7d6e0f95e4488782f04719169fab4d494df3aaadc336888b26b822ea74c5557cadc
   languageName: node
   linkType: hard
 
@@ -1354,43 +1314,38 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomercy-entertainment/media-session@npm:^0.1.10":
-  version: 0.1.11
-  resolution: "@nomercy-entertainment/media-session@npm:0.1.11"
+"@nomercy-entertainment/nomercy-music-player@npm:^2.9.0":
+  version: 2.9.0
+  resolution: "@nomercy-entertainment/nomercy-music-player@npm:2.9.0"
   dependencies:
-    "@capacitor/core": "npm:^6.1.2"
-    "@jofr/capacitor-media-session": "npm:^4.0.0"
-  checksum: 10c0/d03e36f58a7f25e44326c1be0d6ccd1935a6200f2901595a4011e076989518d6031f716c03c6caad694348e729480f42b35bf83539a9e7c51630e74572acdc34
+    "@nomercy-entertainment/nomercy-player-core": "npm:2.9.1"
+  checksum: 10c0/606e942ee642624a72e550292212e4be0cc029ad976dcc921b1fe1131ab69df7c6d3bbd36e09f8cd232811fd1812f31b8982f575c69b8f7918fcf0e75dd439d8
   languageName: node
   linkType: hard
 
-"@nomercy-entertainment/media-session@npm:^1.1.2":
-  version: 1.1.3
-  resolution: "@nomercy-entertainment/media-session@npm:1.1.3"
-  checksum: 10c0/b8d06f0d340ab9d4b049bd2bea23455bbdaf6d8ea0be5ae2074209b3f92e95ab48cd88ab97057aff9a1b1c6db3a2e367e12e1685626579b2f669928d9483d19f
+"@nomercy-entertainment/nomercy-player-core@npm:2.9.1":
+  version: 2.9.1
+  resolution: "@nomercy-entertainment/nomercy-player-core@npm:2.9.1"
+  dependencies:
+    hls.js: "npm:^1.6.0"
+  checksum: 10c0/399f3bc5d05cfd2bad8b4c42829ab22aa50a80090244475832ae95239ccd6a13182dfee314f651dbce6ec0d978f552e6a7ba185e7027a4b8631ef5b7c43f9543
   languageName: node
   linkType: hard
 
-"@nomercy-entertainment/nomercy-music-player@npm:^0.1.6":
-  version: 0.1.20
-  resolution: "@nomercy-entertainment/nomercy-music-player@npm:0.1.20"
-  dependencies:
-    "@ionic/vue": "npm:^8.4.1"
-    "@nomercy-entertainment/media-session": "npm:^0.1.10"
-    audiomotion-analyzer: "npm:^4.5.0"
-    hls.js: "npm:^1.5.13"
-  checksum: 10c0/f3e0935144a9f181954f05dc9db1f9e60286e84349c08493854c029c2969ff6fd11a82f4753b62cfa9f138ff380dbda2163809ff3135cc25be9accb9add99ce6
+"@nomercy-entertainment/nomercy-subtitle-octopus@npm:^0.2.0":
+  version: 0.2.4
+  resolution: "@nomercy-entertainment/nomercy-subtitle-octopus@npm:0.2.4"
+  checksum: 10c0/313b2768b1d20f66bfdb484bf46dda8dfdf01ed43ed5616617b1121daac0319680f0f371713e800cbadb57405c4655ce5d3351cc5d16e355fe51452e73d96002
   languageName: node
   linkType: hard
 
-"@nomercy-entertainment/nomercy-video-player@npm:^1.2.2":
-  version: 1.2.7
-  resolution: "@nomercy-entertainment/nomercy-video-player@npm:1.2.7"
+"@nomercy-entertainment/nomercy-video-player@npm:^2.9.0":
+  version: 2.9.0
+  resolution: "@nomercy-entertainment/nomercy-video-player@npm:2.9.0"
   dependencies:
-    "@nomercy-entertainment/media-session": "npm:^1.1.2"
-    hls.js: "npm:1.6.15"
-    webvtt-parser: "npm:2.2.0"
-  checksum: 10c0/24652265c52c8e2543317132f217457f388c3a587c92513f760b803f4d59f7c0bd8171f57b42ddbb38e75a79f73368f9e98bf050f7690c2d4d5400c17de9f17f
+    "@nomercy-entertainment/nomercy-player-core": "npm:2.9.1"
+    "@nomercy-entertainment/nomercy-subtitle-octopus": "npm:^0.2.0"
+  checksum: 10c0/64d711531acf3c27ff1f12fdba02910b6e297dce26a0d6bcf06a152f50f8334f8c8cb61b0544629f3abeb5aa0dedc81a1df3da5045e1ee830c6aaec65b5695ee
   languageName: node
   linkType: hard
 
@@ -1589,38 +1544,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/rollup-darwin-arm64@npm:4.34.9":
-  version: 4.34.9
-  resolution: "@rollup/rollup-darwin-arm64@npm:4.34.9"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-darwin-arm64@npm:4.44.0":
-  version: 4.44.0
-  resolution: "@rollup/rollup-darwin-arm64@npm:4.44.0"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "@rollup/rollup-darwin-arm64@npm:4.60.4":
   version: 4.60.4
   resolution: "@rollup/rollup-darwin-arm64@npm:4.60.4"
   conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-darwin-x64@npm:4.34.9":
-  version: 4.34.9
-  resolution: "@rollup/rollup-darwin-x64@npm:4.34.9"
-  conditions: os=darwin & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-darwin-x64@npm:4.44.0":
-  version: 4.44.0
-  resolution: "@rollup/rollup-darwin-x64@npm:4.44.0"
-  conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
@@ -1659,38 +1586,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/rollup-linux-arm64-gnu@npm:4.34.9":
-  version: 4.34.9
-  resolution: "@rollup/rollup-linux-arm64-gnu@npm:4.34.9"
-  conditions: os=linux & cpu=arm64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-arm64-gnu@npm:4.44.0":
-  version: 4.44.0
-  resolution: "@rollup/rollup-linux-arm64-gnu@npm:4.44.0"
-  conditions: os=linux & cpu=arm64 & libc=glibc
-  languageName: node
-  linkType: hard
-
 "@rollup/rollup-linux-arm64-gnu@npm:4.60.4":
   version: 4.60.4
   resolution: "@rollup/rollup-linux-arm64-gnu@npm:4.60.4"
   conditions: os=linux & cpu=arm64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-arm64-musl@npm:4.34.9":
-  version: 4.34.9
-  resolution: "@rollup/rollup-linux-arm64-musl@npm:4.34.9"
-  conditions: os=linux & cpu=arm64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-arm64-musl@npm:4.44.0":
-  version: 4.44.0
-  resolution: "@rollup/rollup-linux-arm64-musl@npm:4.44.0"
-  conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
@@ -1750,38 +1649,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/rollup-linux-x64-gnu@npm:4.34.9":
-  version: 4.34.9
-  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.34.9"
-  conditions: os=linux & cpu=x64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-x64-gnu@npm:4.44.0":
-  version: 4.44.0
-  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.44.0"
-  conditions: os=linux & cpu=x64 & libc=glibc
-  languageName: node
-  linkType: hard
-
 "@rollup/rollup-linux-x64-gnu@npm:4.60.4":
   version: 4.60.4
   resolution: "@rollup/rollup-linux-x64-gnu@npm:4.60.4"
   conditions: os=linux & cpu=x64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-x64-musl@npm:4.34.9":
-  version: 4.34.9
-  resolution: "@rollup/rollup-linux-x64-musl@npm:4.34.9"
-  conditions: os=linux & cpu=x64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-linux-x64-musl@npm:4.44.0":
-  version: 4.44.0
-  resolution: "@rollup/rollup-linux-x64-musl@npm:4.44.0"
-  conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
@@ -1806,20 +1677,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/rollup-win32-arm64-msvc@npm:4.34.9":
-  version: 4.34.9
-  resolution: "@rollup/rollup-win32-arm64-msvc@npm:4.34.9"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-win32-arm64-msvc@npm:4.44.0":
-  version: 4.44.0
-  resolution: "@rollup/rollup-win32-arm64-msvc@npm:4.44.0"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "@rollup/rollup-win32-arm64-msvc@npm:4.60.4":
   version: 4.60.4
   resolution: "@rollup/rollup-win32-arm64-msvc@npm:4.60.4"
@@ -1837,20 +1694,6 @@ __metadata:
 "@rollup/rollup-win32-x64-gnu@npm:4.60.4":
   version: 4.60.4
   resolution: "@rollup/rollup-win32-x64-gnu@npm:4.60.4"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-win32-x64-msvc@npm:4.34.9":
-  version: 4.34.9
-  resolution: "@rollup/rollup-win32-x64-msvc@npm:4.34.9"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@rollup/rollup-win32-x64-msvc@npm:4.44.0":
-  version: 4.44.0
-  resolution: "@rollup/rollup-win32-x64-msvc@npm:4.44.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -1880,94 +1723,6 @@ __metadata:
   version: 4.0.0
   resolution: "@sindresorhus/merge-streams@npm:4.0.0"
   checksum: 10c0/482ee543629aa1933b332f811a1ae805a213681ecdd98c042b1c1b89387df63e7812248bb4df3910b02b3cc5589d3d73e4393f30e197c9dde18046ccd471fc6b
-  languageName: node
-  linkType: hard
-
-"@stencil/core@npm:4.43.0":
-  version: 4.43.0
-  resolution: "@stencil/core@npm:4.43.0"
-  dependencies:
-    "@rollup/rollup-darwin-arm64": "npm:4.34.9"
-    "@rollup/rollup-darwin-x64": "npm:4.34.9"
-    "@rollup/rollup-linux-arm64-gnu": "npm:4.34.9"
-    "@rollup/rollup-linux-arm64-musl": "npm:4.34.9"
-    "@rollup/rollup-linux-x64-gnu": "npm:4.34.9"
-    "@rollup/rollup-linux-x64-musl": "npm:4.34.9"
-    "@rollup/rollup-win32-arm64-msvc": "npm:4.34.9"
-    "@rollup/rollup-win32-x64-msvc": "npm:4.34.9"
-  dependenciesMeta:
-    "@rollup/rollup-darwin-arm64":
-      optional: true
-    "@rollup/rollup-darwin-x64":
-      optional: true
-    "@rollup/rollup-linux-arm64-gnu":
-      optional: true
-    "@rollup/rollup-linux-arm64-musl":
-      optional: true
-    "@rollup/rollup-linux-x64-gnu":
-      optional: true
-    "@rollup/rollup-linux-x64-musl":
-      optional: true
-    "@rollup/rollup-win32-arm64-msvc":
-      optional: true
-    "@rollup/rollup-win32-x64-msvc":
-      optional: true
-  bin:
-    stencil: bin/stencil
-  checksum: 10c0/e267b68a12f992ea4f0c9ca69499551d93f31ed9aa9f49a5c421618cc2e104edf56a50c63cf25f1fa2690d30c3c5f699957ee4e7abdf22abf06f5edbc6102641
-  languageName: node
-  linkType: hard
-
-"@stencil/core@npm:^4.35.3":
-  version: 4.43.4
-  resolution: "@stencil/core@npm:4.43.4"
-  dependencies:
-    "@rollup/rollup-darwin-arm64": "npm:4.44.0"
-    "@rollup/rollup-darwin-x64": "npm:4.44.0"
-    "@rollup/rollup-linux-arm64-gnu": "npm:4.44.0"
-    "@rollup/rollup-linux-arm64-musl": "npm:4.44.0"
-    "@rollup/rollup-linux-x64-gnu": "npm:4.44.0"
-    "@rollup/rollup-linux-x64-musl": "npm:4.44.0"
-    "@rollup/rollup-win32-arm64-msvc": "npm:4.44.0"
-    "@rollup/rollup-win32-x64-msvc": "npm:4.44.0"
-  dependenciesMeta:
-    "@rollup/rollup-darwin-arm64":
-      optional: true
-    "@rollup/rollup-darwin-x64":
-      optional: true
-    "@rollup/rollup-linux-arm64-gnu":
-      optional: true
-    "@rollup/rollup-linux-arm64-musl":
-      optional: true
-    "@rollup/rollup-linux-x64-gnu":
-      optional: true
-    "@rollup/rollup-linux-x64-musl":
-      optional: true
-    "@rollup/rollup-win32-arm64-msvc":
-      optional: true
-    "@rollup/rollup-win32-x64-msvc":
-      optional: true
-  bin:
-    stencil: bin/stencil
-  checksum: 10c0/02a4ae50986a83110dcf4c5bdfca6013e6952df2678cbc905a9c0eef915a98f6c3e8f2295c3bb72ee2e1bd167ad8f599405296665b15a59516b44b310138c474
-  languageName: node
-  linkType: hard
-
-"@stencil/vue-output-target@npm:0.10.7":
-  version: 0.10.7
-  resolution: "@stencil/vue-output-target@npm:0.10.7"
-  peerDependencies:
-    "@stencil/core": ">=2.0.0 || >=3 || >= 4.0.0-beta.0 || >= 4.0.0"
-    vue: ^3.4.38
-    vue-router: ^4.5.0
-  peerDependenciesMeta:
-    "@stencil/core":
-      optional: true
-    vue:
-      optional: false
-    vue-router:
-      optional: true
-  checksum: 10c0/497287947682c71211bc2fd4fa9c7147ee3393d488313cde92ab1579bdffaa63adc576f629b1d178c9c2e4c311e249ecd143054b108398a6f74eef976da029d6
   languageName: node
   linkType: hard
 
@@ -2489,13 +2244,6 @@ __metadata:
   version: 2.1.0
   resolution: "array-union@npm:2.1.0"
   checksum: 10c0/429897e68110374f39b771ec47a7161fc6a8fc33e196857c0a396dc75df0b5f65e4d046674db764330b6bb66b39ef48dd7c53b6a2ee75cfb0681e0c1a7033962
-  languageName: node
-  linkType: hard
-
-"audiomotion-analyzer@npm:^4.5.0":
-  version: 4.5.4
-  resolution: "audiomotion-analyzer@npm:4.5.4"
-  checksum: 10c0/af7dacc5aada9198b770b768a0780ffc5f54e1946e2222c792d3af063da614cc4609b2513306bf75ebb24c8f27a6e6615436116e567b941b66edf6810c5df8f1
   languageName: node
   linkType: hard
 
@@ -3694,17 +3442,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hls.js@npm:1.6.15":
-  version: 1.6.15
-  resolution: "hls.js@npm:1.6.15"
-  checksum: 10c0/a3558909506b9d93420b395b1d9508df364f911ebc19b315f98bd4c1b94973ed996a95fe8662756a3fca96b762af741d13df81987bc68322f473acacbecbc6d9
-  languageName: node
-  linkType: hard
-
-"hls.js@npm:^1.5.13":
-  version: 1.6.16
-  resolution: "hls.js@npm:1.6.16"
-  checksum: 10c0/dedf0255fdea857f29e46caab990b2bbdfde9410e64932466e03fc95018238b94486ce57e4b6a96aa4d0e8f9fd26c877e3905951f900fd58437f5eab2b284722
+"hls.js@npm:^1.6.0":
+  version: 1.7.4
+  resolution: "hls.js@npm:1.7.4"
+  checksum: 10c0/7c7534bddb262ad4067661f1db9120d7fb76626fd7f9de12d8cb1f5dddf5792a5fe9e7b1031351711d2657456a3e2b687ce3f95e332a24ebdbb56465a942f28a
   languageName: node
   linkType: hard
 
@@ -3774,15 +3515,6 @@ __metadata:
   version: 2.0.4
   resolution: "inherits@npm:2.0.4"
   checksum: 10c0/4e531f648b29039fb7426fb94075e6545faa1eb9fe83c29f0b6d9e7263aceb4289d2d4557db0d428188eeb449cc7c5e77b0a0b2c4e248ff2a65933a0dee49ef2
-  languageName: node
-  linkType: hard
-
-"ionicons@npm:^8.0.13":
-  version: 8.0.13
-  resolution: "ionicons@npm:8.0.13"
-  dependencies:
-    "@stencil/core": "npm:^4.35.3"
-  checksum: 10c0/4f12586359ed5d68dafff0440ff7ca4c195bdea5fff1f9fa4626add1e4fcea78a862db87c20930199f93817737695425b319aede65ef2111cf0191cdc346ce80
   languageName: node
   linkType: hard
 
@@ -4301,8 +4033,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nomercy-examples@workspace:."
   dependencies:
-    "@nomercy-entertainment/nomercy-music-player": "npm:^0.1.6"
-    "@nomercy-entertainment/nomercy-video-player": "npm:^1.2.2"
+    "@nomercy-entertainment/nomercy-music-player": "npm:^2.9.0"
+    "@nomercy-entertainment/nomercy-video-player": "npm:^2.9.0"
     "@tailwindcss/line-clamp": "npm:^0.4.4"
     "@types/node": "npm:^22.10.5"
     "@types/webvtt-parser": "npm:^2.2.0"
@@ -5740,7 +5472,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.1.0, tslib@npm:^2.6.2, tslib@npm:^2.8.1":
+"tslib@npm:^2.6.2, tslib@npm:^2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
@@ -6002,13 +5734,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/0b065772363e6f6358c70958d99cee8f5e8cc5dc773676380a06c737714b9a162721cade9c16fe9ff87aea569e2ce5cd2da2f1db5f510357b69d575f9542ded9
-  languageName: node
-  linkType: hard
-
-"webvtt-parser@npm:2.2.0":
-  version: 2.2.0
-  resolution: "webvtt-parser@npm:2.2.0"
-  checksum: 10c0/cb517e6aed0e93bc237bf97ba874d7d9c0f9ce19c7b663b2da4a6b4543dead44e81fe23347077e5b18352655b9aac78d2208fba607d4f3fb4fbd9e419db7f633
   languageName: node
   linkType: hard
 

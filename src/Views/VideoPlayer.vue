@@ -1,11 +1,12 @@
 ﻿<script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 
+import { DesktopUiPlugin, KeyHandlerPlugin } from "@nomercy-entertainment/nomercy-video-player/plugins";
+
 import type { Option } from "@/types/types";
 
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer.vue';
-import { DesktopUIPlugin } from "@/components/VideoPlayer/plugins/UIPlugin/desktopUIPlugin";
-import KeyHandlerPlugin from "@/components/VideoPlayer/plugins/UIPlugin/keyHandlerPlugin";
+import { desktopUiOptions } from '@/components/VideoPlayer/config';
 
 import Layout from "@/Views/Layout.vue";
 
@@ -118,273 +119,154 @@ const switchLanguage = (code: string) => {
   nextTick(() => { isMounted.value = true; });
 };
 
-const uiActive = ref(false);
+const uiActive = ref(true);
 const keyHandlerActive = ref(false);
-let keyHandlerPlugin: KeyHandlerPlugin;
-let desktopUIPlugin: DesktopUIPlugin;
+
+const loggedEvents = [
+  'ready', 'queue', 'item', 'ended', 'firstFrame', 'play', 'pause', 'playing', 'seek', 'seeked',
+  'time', 'mute', 'volume', 'fullscreen', 'theater', 'pip', 'levels', 'audioTracks', 'subtitles',
+  'subtitle', 'beforePlay', 'error', 'fatal', 'warning',
+] as const;
+
+const labelOf = (track: { label?: string; name?: string }, index: number) =>
+  track.label ?? track.name ?? `Track ${index + 1}`;
+
+const syncSubtitleOptions = () => {
+  const player = videoPlayerRef.value?.player;
+  if (!player) return;
+  const currentIndex = player.subtitle()?.index ?? -1;
+  subtitleOptions.value = [
+    {
+      label: 'Off',
+      active: currentIndex === -1,
+      action: () => { void player.subtitle(null); },
+    },
+    ...player.subtitles().map((track, index) => ({
+      label: labelOf(track, index),
+      active: currentIndex === index,
+      action: () => { void player.subtitle(index); },
+    })),
+  ];
+};
+
+const syncAudioOptions = () => {
+  const player = videoPlayerRef.value?.player;
+  if (!player) return;
+  const currentIndex = player.audioTrack()?.index ?? 0;
+  audioOptions.value = player.audioTracks().map((track, index) => ({
+    label: labelOf(track, index),
+    active: currentIndex === index,
+    action: () => { void player.audioTrack(index); },
+  }));
+};
+
+const setTheater = (enabled: boolean) => {
+  const container = document.getElementById('container');
+  const menu = document.getElementById('menu');
+  const wrapper = document.getElementById('wrapper');
+  menu?.classList.toggle('theater-hidden', enabled);
+  wrapper?.classList.toggle('!max-w-none', enabled);
+  container?.classList.toggle('!px-0', enabled);
+  container?.classList.toggle('!gap-0', enabled);
+};
+
+const setPip = (enabled: boolean) => {
+  const wrapper = document.getElementById('wrapper');
+  if (!wrapper) return;
+  if (enabled) {
+    wrapper.classList.remove('pip-float-exit');
+    wrapper.classList.add('pip-float');
+    return;
+  }
+
+  // Measure pip rect while still fixed
+  const pipRect = wrapper.getBoundingClientRect();
+
+  // Briefly swap to measure the flow rect without triggering a paint
+  wrapper.classList.remove('pip-float');
+  const fullRect = wrapper.getBoundingClientRect();
+  wrapper.classList.add('pip-float');
+
+  // With transform-origin: bottom right, scale grows toward top-left.
+  // Translate aligns the two bottom-right corners so the anchor stays put.
+  const scaleX = fullRect.width / pipRect.width;
+  const scaleY = fullRect.height / pipRect.height;
+  const dx = fullRect.right - pipRect.right;
+  const dy = fullRect.bottom - pipRect.bottom;
+
+  wrapper.style.transformOrigin = 'bottom right';
+
+  const anim = wrapper.animate(
+    [
+      { transform: 'translate(0, 0) scale(1, 1)', borderRadius: '0.5rem' },
+      { transform: `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`, borderRadius: '0' },
+    ],
+    { duration: 420, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', fill: 'forwards' },
+  );
+
+  anim.onfinish = () => {
+    anim.cancel();
+    wrapper.classList.remove('pip-float');
+    wrapper.style.transformOrigin = '';
+  };
+};
 
 watch(videoPlayerRef, (value) => {
-  if (!value) return;
-
-  const player = value.player;
+  const player = value?.player;
   if (!player) return;
 
   window.player = player;
 
-  player.on('ready', () => {
-    console.log('ready');
-  });
-
-  player.on('playlist', (data) => {
-    console.log('playlist', data);
-  });
-
-  player.on('item', (data) => {
-    console.log('item', data);
-  });
-
-  player.on('playlistComplete', () => {
-    console.log('playlistComplete');
-  });
-
-  player.on('bufferChange', () => {
-    console.log('bufferChange');
-  });
-
-  player.on('firstFrame', () => {
-    console.log('firstFrame');
-  });
-
-  player.on('play', () => {
-    console.log('play');
-  });
-
-  player.on('pause', () => {
-    console.log('pause');
-  });
-
-  player.on('buffer', () => {
-    console.log('buffer');
-  });
-
-  player.on('idle', () => {
-    console.log('idle');
-  });
-
-  player.on('complete', () => {
-    console.log('complete');
-  });
-
-  player.on('error', () => {
-    console.log('error');
-  });
-
-  player.on('seek', (data) => {
-    console.log('seek', data);
-  });
-  player.on('seeked', (data) => {
-    console.log('seeked', data);
-  });
-
-  player.on('time', (data) => {
-    console.log('time', data);
-  });
-
-  player.on('mute', (data) => {
-    console.log('mute', data);
-  });
-  player.on('volume', (data) => {
-    console.log('volume', data);
-  });
-
-  player.on('fullscreen', (data) => {
-    console.log('fullscreen', data);
-  });
-
-  player.on('theater', (enabled) => {
-    console.log('theater', enabled);
-    const container = document.getElementById('container');
-    const menu = document.getElementById('menu');
-    const wrapper = document.getElementById('wrapper');
-    if (enabled) {
-      menu?.classList.add('theater-hidden');
-      wrapper?.classList.add('!max-w-none');
-      container?.classList.add('!px-0', '!gap-0');
-    } else {
-      menu?.classList.remove('theater-hidden');
-      wrapper?.classList.remove('!max-w-none');
-      container?.classList.remove('!px-0', '!gap-0');
-    }
-  });
-
-  player.on('pip', (enabled) => {
-    console.log('pip', enabled);
-    const wrapper = document.getElementById('wrapper');
-    if (!wrapper) return;
-    if (enabled) {
-      wrapper.classList.remove('pip-float-exit');
-      wrapper.classList.add('pip-float');
-    } else {
-      // Measure pip rect while still fixed
-      const pipRect = wrapper.getBoundingClientRect();
-
-      // Briefly swap to measure the flow rect without triggering a paint
-      wrapper.classList.remove('pip-float');
-      const fullRect = wrapper.getBoundingClientRect();
-      wrapper.classList.add('pip-float');
-
-      // With transform-origin: bottom right, scale grows toward top-left.
-      // Translate aligns the two bottom-right corners so the anchor stays put.
-      const scaleX = fullRect.width  / pipRect.width;
-      const scaleY = fullRect.height / pipRect.height;
-      const dx     = fullRect.right  - pipRect.right;
-      const dy     = fullRect.bottom - pipRect.bottom;
-
-      wrapper.style.transformOrigin = 'bottom right';
-
-      const anim = wrapper.animate(
-        [
-          { transform: 'translate(0, 0) scale(1, 1)',                              borderRadius: '0.5rem' },
-          { transform: `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`, borderRadius: '0'     },
-        ],
-        { duration: 420, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', fill: 'forwards' }
-      );
-
-      anim.onfinish = () => {
-        anim.cancel();
-        wrapper.classList.remove('pip-float');
-        wrapper.style.transformOrigin = '';
-      };
-    }
-  });
-
-  player.on('resize', () => {
-    console.log('resize');
-  });
-
-  player.on('levels', (data) => {
-    console.log('levels', data);
-  });
-
-  player.on('levelsChanged', (data) => {
-    console.log('levelsChanged', data);
-  });
-
-  player.on('audioTracks', (data) => {
-    console.log('audioTracks', data);
-  });
-
-  player.on('audioTrackChanged', (data) => {
-    console.log('audioTrackChanged', data);
-  });
-
-  player.on('subtitleList', (data) => {
-    console.log('subtitleList', data);
-  });
-
-  player.on('subtitleChanged', (data) => {
-    console.log('subtitleChanged', data?.id);
-  });
-
-  player.on('active', (showing) => {
-    console.log('active', showing);
-  });
-
-  player.on('beforePlay', () => {
-    console.log('beforePlay');
-  });
-
-  player.on('beforeComplete', () => {
-    console.log('beforeComplete');
-  });
-
-  player.on('meta', () => {
-    console.log('meta');
-  });
-
-  player.on('lastTimeTrigger', (data) => {
-    console.log('lastTimeTrigger');
-  });
-
-  player.once('audioTrackChanging', (track) => {
-    audioOptions.value = [{
-      label: track.name,
-      active: true,
-      action: () => player.audioTrack(0),
-    }]
-  });
-  player.on('audioTracks', (tracks) => {
-    audioOptions.value = tracks.map((track, index) => {
-      return {
-        label: track.label ?? `Track ${index + 1}`,
-        active: true,
-        action: () => player.audioTrack(track.id!),
-      };
+  for (const name of loggedEvents) {
+    player.on(name, (data: unknown) => {
+      console.log(name, data);
     });
-  });
-
-  player.on('subtitleList', (tracks) => {
-    const currentId = player.subtitle()?.id ?? -1;
-    subtitleOptions.value = [
-      {
-        label: 'Off',
-        active: currentId === -1,
-        action: () => player.subtitle(-1),
-      },
-      ...tracks.map((track, index) => ({
-        label: track.label ?? `Track ${index + 1}`,
-        active: currentId === track.id,
-        action: () => player.subtitle(track.id!),
-      })),
-    ];
-  });
-
-  player.on('subtitleChanged', (track) => {
-    subtitleOptions.value = subtitleOptions.value.map((option, index) => {
-      option.active = index - 1 === (track?.id ?? -1);
-      return option;
-    });
-  });
-
-  // Re-register active plugins on new player instance (handles language switch remounts)
-  if (uiActive.value) {
-    desktopUIPlugin = new DesktopUIPlugin();
-    player.registerPlugin('desktopUI', desktopUIPlugin);
-    player.usePlugin('desktopUI');
   }
+
+  player.on('theater', ({ active }) => setTheater(active));
+  player.on('pip', ({ active }) => setPip(active));
+
+  player.on('subtitles', syncSubtitleOptions);
+  player.on('subtitle', syncSubtitleOptions);
+  player.on('audioTracks', syncAudioOptions);
+  player.on('item', () => {
+    syncSubtitleOptions();
+    syncAudioOptions();
+  });
+
+  // A language switch remounts the player; carry the key handler choice over.
   if (keyHandlerActive.value) {
-    keyHandlerPlugin = new KeyHandlerPlugin();
-    player.registerPlugin('keyHandler', keyHandlerPlugin);
-    player.usePlugin('keyHandler');
+    player.addPlugin(KeyHandlerPlugin);
   }
-
 });
 
 const toggleUI = () => {
+  const player = videoPlayerRef.value?.player;
+  if (!player) return;
+
   if (!uiActive.value) {
     uiActive.value = true;
-    desktopUIPlugin = new DesktopUIPlugin();
-    videoPlayerRef.value?.player?.registerPlugin('desktopUI', desktopUIPlugin);
-    videoPlayerRef.value?.player?.usePlugin('desktopUI');
+    player.addPlugin(DesktopUiPlugin, desktopUiOptions);
   }
   else {
     uiActive.value = false;
-    videoPlayerRef.value?.player?.plugins.get('desktopUI')?.dispose();
+    player.removePlugin(DesktopUiPlugin);
   }
 
   localStorage.setItem('NoMercy-example-video-ui', uiActive.value.toString());
 };
 
 const toggleKeyHandler = () => {
+  const player = videoPlayerRef.value?.player;
+  if (!player) return;
+
   if (!keyHandlerActive.value) {
     keyHandlerActive.value = true;
-    keyHandlerPlugin = new KeyHandlerPlugin();
-    videoPlayerRef.value?.player?.registerPlugin('keyHandler', keyHandlerPlugin);
-    videoPlayerRef.value?.player?.usePlugin('keyHandler');
+    player.addPlugin(KeyHandlerPlugin);
   }
   else {
     keyHandlerActive.value = false;
-    videoPlayerRef.value?.player?.plugins.get('keyHandler')?.dispose();
+    player.removePlugin(KeyHandlerPlugin);
   }
   localStorage.setItem('NoMercy-example-video-keyhandler', keyHandlerActive.value.toString());
 };
@@ -402,7 +284,7 @@ const options = computed<Option[]>(() => [
   },
   {
     label: 'Fullscreen',
-    action: () => videoPlayerRef.value?.player?.enterFullscreen(),
+    action: () => videoPlayerRef.value?.player?.fullscreen(true),
   },
   {
     label: 'Settings',
@@ -460,16 +342,9 @@ const options = computed<Option[]>(() => [
 ]);
 
 onMounted(() => {
+  uiActive.value = localStorage.getItem('NoMercy-example-video-ui') !== 'false';
+  keyHandlerActive.value = localStorage.getItem('NoMercy-example-video-keyhandler') === 'true';
   isMounted.value = true;
-  nextTick(() => {
-
-    if (localStorage.getItem('NoMercy-example-video-ui') == null || localStorage.getItem('NoMercy-example-video-ui') === 'true') {
-      toggleUI();
-    }
-    if (localStorage.getItem('NoMercy-example-video-keyhandler') === 'true') {
-      toggleKeyHandler();
-    }
-  });
 });
 
 onUnmounted(() => {
@@ -480,7 +355,7 @@ onUnmounted(() => {
 
 <template>
   <Layout :theme="theme" title="NoMercy Entertainment - Video Player" :options="options as Option[]">
-    <VideoPlayer v-if="isMounted" ref="videoPlayerRef" :language="currentLanguage" />
+    <VideoPlayer v-if="isMounted" ref="videoPlayerRef" :language="currentLanguage" :with-ui="uiActive" />
     <div
       class="flex flex-1 text-left mx-auto transform transition-transform duration-300 hover:scale-105 h-14 max-h-14">
       <pre id="output" class="d-inline-block text-left mb-0 scale-50 h-20"

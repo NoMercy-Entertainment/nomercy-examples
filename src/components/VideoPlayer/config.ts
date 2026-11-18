@@ -1,25 +1,20 @@
 ﻿
-import type { PlayerConfig } from "@nomercy-entertainment/nomercy-video-player";
+import type { VideoPlayerConfig, VideoPlaylistItem } from "@nomercy-entertainment/nomercy-video-player";
+import type { DesktopUiOptions } from "@nomercy-entertainment/nomercy-video-player/plugins/desktop-ui";
 
 import playlist from "./playlist";
 
-
-// The v1 player puts basePath in front of every playlist path, even an absolute one,
-// so every playlist path is relative to the media repo root (#24).
+// Every playlist path is relative to the media repo root.
 const BASE = 'https://raw.githubusercontent.com/NoMercy-Entertainment/nomercy-media/master';
 const IMG_BASE = 'https://image.tmdb.org/t/p/w780';
 
-const config: PlayerConfig = {
+const config: VideoPlayerConfig = {
 	muted: false,
-	controls: false,
+	autoPlay: false,
 	preload: 'auto',
-	debug: false,
-	playlist: playlist,
-	translations: ['/locales/{lang}/ui.json'],
-	basePath: BASE,
-	imageBasePath: IMG_BASE,
-	controlsTimeout: 3000,
-	doubleClickDelay: 500,
+	playlist: playlist as VideoPlaylistItem[],
+	baseUrl: BASE,
+	baseImageUrl: IMG_BASE,
 	playbackRates: [
 		0.25,
 		0.5,
@@ -31,5 +26,18 @@ const config: PlayerConfig = {
 		2,
 	],
 };
+
+export const desktopUiOptions = {
+	buttons: {
+		theater: true,
+		pip: true,
+		speed: true,
+		quality: true,
+		subtitles: true,
+		audio: true,
+		playlist: true,
+		aspectRatio: true,
+	},
+} as const satisfies DesktopUiOptions;
 
 export default config;

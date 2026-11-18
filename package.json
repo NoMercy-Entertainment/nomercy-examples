@@ -13,8 +13,8 @@
     "postbuild": "node remove-moz.cjs"
   },
   "dependencies": {
-    "@nomercy-entertainment/nomercy-music-player": "^0.1.6",
-    "@nomercy-entertainment/nomercy-video-player": "^1.2.2",
+    "@nomercy-entertainment/nomercy-music-player": "^2.9.0",
+    "@nomercy-entertainment/nomercy-video-player": "^2.9.0",
     "@vueuse/core": "^12.4.0",
     "tailwind-children": "^0.5.0",
     "tailwind-merge": "^2.6.0",

@@ -1,6 +1,9 @@
-﻿import { PlaylistItem } from "@nomercy-entertainment/nomercy-video-player/src/types";
+﻿import type { BasePlaylistItem } from "@nomercy-entertainment/nomercy-player-core";
 
-const playlist: PlaylistItem[] = [
+// The server wire shape (file, tracks, string durations); the player normalizes it on ingest.
+type WireItem = BasePlaylistItem & Record<string, unknown>;
+
+const playlist: WireItem[] = [
 	{
 		id: 'sintel',
 		title: 'Sintel',

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, ref, watch} from "vue";
 
-import nmplayer from "@nomercy-entertainment/nomercy-video-player/src";
-import type {NMPlayer} from "@nomercy-entertainment/nomercy-video-player/src/types";
-import {KeyHandlerPlugin} from "@nomercy-entertainment/nomercy-video-player/src/plugins/keyHandlerPlugin";
+import nmplayer, {type NMVideoPlayer} from "@nomercy-entertainment/nomercy-video-player";
+import {KeyHandlerPlugin} from "@nomercy-entertainment/nomercy-video-player/plugins";
 
 import config from "../VideoPlayer/config";
 
@@ -11,7 +10,7 @@ const props = defineProps<{
 	step: number;
 }>();
 
-const player = ref<NMPlayer>();
+const player = ref<NMVideoPlayer>();
 let createId = 0;
 
 const stepModules: Record<number, () => Promise<any>> = {
@@ -31,7 +30,7 @@ async function createPlayer(step: number) {
 	const id = ++createId;
 
 	if (player.value) {
-		player.value.dispose();
+		void player.value.dispose();
 		player.value = undefined;
 	}
 
@@ -45,18 +44,15 @@ async function createPlayer(step: number) {
 	// A newer createPlayer call was started while we were awaiting — bail out
 	if (id !== createId) return;
 
-	player.value = nmplayer('tutorial-player')
-		.setup(config) as unknown as NMPlayer;
-
 	const PluginClass = mod.StepPlugin ?? mod.default;
 
-	const uiPlugin = new PluginClass();
-	player.value.registerPlugin('ui', uiPlugin);
-	player.value.usePlugin('ui');
+	const instance = nmplayer('tutorial-player')
+		.addPlugin(PluginClass)
+		.addPlugin(KeyHandlerPlugin)
+		.setup({ ...config, controls: true });
 
-	const keyPlugin = new KeyHandlerPlugin();
-	player.value.registerPlugin('keys', keyPlugin);
-	player.value.usePlugin('keys');
+	player.value = instance;
+	window.player = instance;
 }
 
 onMounted(() => {
@@ -69,7 +65,7 @@ watch(() => props.step, (newStep) => {
 
 onUnmounted(() => {
 	createId++;
-	player.value?.dispose();
+	void player.value?.dispose();
 });
 
 defineExpose({
