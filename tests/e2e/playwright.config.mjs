@@ -2,6 +2,8 @@ import { defineConfig } from '@playwright/test';
 
 const PORT = 4173;
 const output = process.env.E2E_OUT ?? 'C:/Projects/.work/tmp/examples-proof';
+// E2E_BASE_URL runs the suite against a deployed site (the live proof) instead of a local preview.
+const liveBase = process.env.E2E_BASE_URL;
 
 export default defineConfig({
 	testDir: '.',
@@ -10,7 +12,7 @@ export default defineConfig({
 	workers: Number(process.env.E2E_WORKERS ?? 3),
 	reporter: [['list'], ['./results-reporter.mjs', { file: `${output}/results.json` }]],
 	use: {
-		baseURL: `http://127.0.0.1:${PORT}`,
+		baseURL: liveBase ?? `http://127.0.0.1:${PORT}`,
 		headless: true,
 		launchOptions: { args: ['--mute-audio'] },
 	},
@@ -20,11 +22,13 @@ export default defineConfig({
 		{ name: 'firefox', use: { browserName: 'firefox' } },
 		{ name: 'webkit', use: { browserName: 'webkit' } },
 	],
-	webServer: {
-		command: `corepack yarn preview --host 127.0.0.1 --port ${PORT} --strictPort`,
-		cwd: '../..',
-		url: `http://127.0.0.1:${PORT}/`,
-		reuseExistingServer: false,
-		timeout: 60_000,
-	},
+	webServer: liveBase
+		? undefined
+		: {
+				command: `corepack yarn preview --host 127.0.0.1 --port ${PORT} --strictPort`,
+				cwd: '../..',
+				url: `http://127.0.0.1:${PORT}/`,
+				reuseExistingServer: false,
+				timeout: 60_000,
+			},
 });

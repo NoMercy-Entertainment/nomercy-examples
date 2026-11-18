@@ -95,9 +95,10 @@ onUnmounted(() => {
 
 <template>
   <Layout :theme="theme" title="NoMercy Entertainment - Twitch Plugin" :options="options">
-    <div id="twitch-player" class="group nomercyplayer rounded-md !overflow-unset w-full aspect-video"></div>
+    <!-- The layout box clips overflow: the player takes only the height the form and message leave. -->
+    <div id="twitch-player" class="group nomercyplayer rounded-md !overflow-unset w-full flex-1 min-h-0"></div>
 
-    <form class="flex flex-col sm:flex-row gap-2 mt-4 w-full" @submit.prevent="play">
+    <form class="flex shrink-0 flex-col sm:flex-row gap-2 mt-2 sm:mt-4 w-full" @submit.prevent="play">
       <input v-model="field"
         id="twitch-channel"
         type="text"
@@ -114,6 +115,6 @@ onUnmounted(() => {
       </button>
     </form>
 
-    <p id="twitch-message" role="status" class="mt-2 min-h-6 text-sm text-neutral-300">{{ message }}</p>
+    <p id="twitch-message" role="status" class="shrink-0 mt-2 min-h-6 text-sm text-neutral-300">{{ message }}</p>
   </Layout>
 </template>

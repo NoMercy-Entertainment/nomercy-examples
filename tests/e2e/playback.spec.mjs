@@ -103,6 +103,19 @@ test.describe('twitch page', () => {
 		await expect(page.locator('#twitch-message')).toContainText('Enter a channel name');
 		await expect(page.locator('iframe[src*="player.twitch.tv"]')).toHaveCount(0);
 	});
+
+	for (const [name, viewport] of [['desktop', { width: 1440, height: 900 }], ['phone', { width: 390, height: 844 }]]) {
+		test(`the channel form and message fit inside the player box on ${name}`, async ({ page }) => {
+			if (pages && !pages.includes('/twitch')) test.skip();
+			await page.setViewportSize(viewport);
+			await page.goto('/twitch');
+			const box = await page.locator('#twitch-player').evaluate(el => el.parentElement.getBoundingClientRect().bottom);
+			for (const id of ['#twitch-channel', '#twitch-play', '#twitch-message']) {
+				const bottom = await page.locator(id).evaluate(el => el.getBoundingClientRect().bottom);
+				expect(bottom, `${id} bottom ${bottom} vs box ${box}`).toBeLessThanOrEqual(box);
+			}
+		});
+	}
 });
 
 test.describe('music page controls', () => {
