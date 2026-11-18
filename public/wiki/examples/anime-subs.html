@@ -44,7 +44,7 @@
 		<div class="row">
 			<button onclick="player.play()">Play</button>
 			<button onclick="player.pause()">Pause</button>
-			<button onclick="player.seek(0)">Restart</button>
+			<button onclick="player.time(0)">Restart</button>
 		</div>
 
 		<h2>Subtitles</h2>
@@ -72,12 +72,13 @@
 		<div class="event-stream" id="stream"></div>
 	</main>
 
-	<script src="https://cdn.jsdelivr.net/npm/@nomercy-entertainment/nomercy-video-player@1.0.0-beta.28/dist/nomercy-video-player.iife.js"></script>
+	<script type="module" src="player.js"></script>
 	<script src="event-stream.js"></script>
-	<script>
+	<script type="module">
+		var media = 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Anime';
 		var config = {
-			basePath: 'https://raw.githubusercontent.com/NoMercy-Entertainment/media/master/Anime',
-			imageBasePath: 'https://image.tmdb.org/t/p/w780',
+			baseUrl: media,
+			baseImageUrl: 'https://image.tmdb.org/t/p/w780',
 			playlist: [{
 				id: 'railwars-op',
 				title: 'Rail Wars! — Opening',
@@ -91,7 +92,8 @@
 						kind: 'subtitles',
 						label: 'English',
 						language: 'eng',
-						file: '/Rail.Wars!.(2014)/Rail.Wars!.S00E00/subtitles/Rail.Wars!.(2014).S00E00.NoMercy.eng.full.ass',
+						// Absolute: 2.9.0 resolves a subtitle track against the origin of baseUrl, dropping its path.
+						file: media + '/Rail.Wars!.(2014)/Rail.Wars!.S00E00/subtitles/Rail.Wars!.(2014).S00E00.NoMercy.eng.full.ass',
 					},
 					{
 						id: 1,
@@ -102,16 +104,16 @@
 			}],
 		};
 
-		var player = nmplayer('player').setup(config);
-
-		// Register and activate OctopusPlugin for ASS rendering
-		// The local copy of the subtitle worker; the plugin's CDN default resolves to an old build.
-		player.registerPlugin('octopus', new nmplayer.OctopusPlugin({
-			workerUrl: '/js/octopus/subtitles-octopus-worker.js',
-			legacyWorkerUrl: '/js/octopus/subtitles-octopus-worker-legacy.js',
-			fallbackFont: '/js/octopus/default.ttf',
-		}));
-		player.usePlugin('octopus');
+		// OctopusPlugin renders the ASS track. It uses the local copy of the subtitle worker;
+		// the plugin's CDN default resolves to an old build.
+		window.player = nmplayer('player')
+			.addPlugin(nmPlugins.DesktopUiPlugin)
+			.addPlugin(nmPlugins.OctopusPlugin, {
+				workerUrl: '/js/octopus/subtitles-octopus-worker.js',
+				legacyWorkerUrl: '/js/octopus/subtitles-octopus-worker-legacy.js',
+				fallbackFont: '/js/octopus/default.ttf',
+			})
+			.setup(config);
 
 		function toggleSubs(on) {
 			var btns = document.querySelectorAll('#sub-row button');
@@ -122,20 +124,22 @@
 				// subtitle(0) = first real subtitle track
 				player.subtitle(0);
 			} else {
-				// subtitle(-1) = Off
-				player.subtitle(-1);
+				// subtitle(null) = Off
+				player.subtitle(null);
 			}
 		}
 
-		// Auto-enable subtitles once ready
-		player.on('ready', function () { toggleSubs(true); });
+		Object.assign(window, { toggleSubs });
 
-		var es = createEventStream(player, {
+		// Auto-enable subtitles once ready
+		player.ready().then(function () { toggleSubs(true); });
+
+		window.es = createEventStream(player, {
 			categories: {
-				playback:  { color: '#4ade80', events: ['play', 'pause', 'seek', 'complete', 'firstFrame'] },
+				playback:  { color: '#4ade80', events: ['play', 'pause', 'seek', 'ended', 'firstFrame'] },
 				time:      { color: '#facc15', events: ['time'] },
-				subtitles: { color: '#c084fc', events: ['subtitleList', 'subtitleChanged'] },
-				lifecycle: { color: '#a1a1aa', events: ['ready', 'beforePlay', 'idle', 'item'] },
+				subtitles: { color: '#c084fc', events: ['subtitles', 'subtitle'] },
+				lifecycle: { color: '#a1a1aa', events: ['ready', 'beforePlay', 'phase', 'item'] },
 			},
 		});
 	</script>
